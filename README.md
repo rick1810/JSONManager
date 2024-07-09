@@ -21,4 +21,10 @@ System.out.println(jsonB.toString()); // {"A":"B"}
 JSONObject jsonC = new JSONObject(jsonB);
 jsonC.put("C", "D");
 System.out.println(jsonC.toString()); // {"A":"B","C":"D"}
+
+JSONObject jsonD = new JSONObject();
+long l = 5;
+jsonD.put("BigNumber", l);
+System.out.println(jsonD.toString()); // {"BigNumber":5L}
+System.out.println(jsonD.toString(true)); // {"BigNumber":5}
 ```
