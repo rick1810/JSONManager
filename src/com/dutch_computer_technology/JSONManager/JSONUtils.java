@@ -8,7 +8,7 @@ public class JSONUtils {
 	 * @return Version of the JSONManager
 	 */
 	public static String version() {
-		return "1.0.4";
+		return "1.0.5";
 	};
 	
 	/**
@@ -21,11 +21,11 @@ public class JSONUtils {
 		str = str.replace("\\", "\\\\");
 		str = str.replace("/", "\\/");
 		str = str.replace("\"", "\\\"");
-		str = str.replace("\n", "\\\n");
-		str = str.replace("\b", "\\\b");
-		str = str.replace("\f", "\\\f");
-		str = str.replace("\r", "\\\r");
-		str = str.replace("\t", "\\\t");
+		str = str.replace("\n", "\\n");
+		str = str.replace("\b", "\\b");
+		str = str.replace("\f", "\\f");
+		str = str.replace("\r", "\\r");
+		str = str.replace("\t", "\\t");
 		return str;
 	};
 	
@@ -39,11 +39,11 @@ public class JSONUtils {
 		str = str.replace("\\\\", "\\");
 		str = str.replace("\\/", "/");
 		str = str.replace("\\\"", "\"");
-		str = str.replace("\\\n", "\n");
-		str = str.replace("\\\b", "\b");
-		str = str.replace("\\\f", "\f");
-		str = str.replace("\\\r", "\r");
-		str = str.replace("\\\t", "\t");
+		str = str.replace("\\n", "\n");
+		str = str.replace("\\b", "\b");
+		str = str.replace("\\f", "\f");
+		str = str.replace("\\r", "\r");
+		str = str.replace("\\t", "\t");
 		return str;
 	};
 	
