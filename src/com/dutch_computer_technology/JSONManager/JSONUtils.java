@@ -8,7 +8,34 @@ public class JSONUtils {
 	 * @return Version of the JSONManager
 	 */
 	public static String version() {
-		return "1.0.5";
+		return "1.0.6";
+	};
+	
+	/**
+	 * Remove special characters before parsing,
+	 * Tabs Spaces Newlines
+	 * 
+	 * @param str String to be sanitized
+	 * @return Sanitized String ready to parse
+	 */
+	public static String sanitize(String str) {
+		str = str.replace("\n", "");
+		str = str.replace("\b", "");
+		str = str.replace("\f", "");
+		str = str.replace("\r", "");
+		str = str.replace("\t", "");
+		String strOut = "";
+		boolean open = false;
+		for (int i = 0; i < str.length(); i++) {
+			char chr = str.charAt(i);
+			if (chr == '"') open = !open;
+			if (open) {
+				strOut += chr;
+			} else if (chr != ' ') {
+				strOut += chr;
+			};
+		};
+		return strOut;
 	};
 	
 	/**

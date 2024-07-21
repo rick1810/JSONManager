@@ -45,6 +45,7 @@ public class JSONArray {
 	 */
 	public void parse(String str) throws JSONParseException {
 		if (str == null) throw new JSONParseException("Null");
+		str = JSONUtils.sanitize(str);
 		if (!(str.startsWith("[") && str.endsWith("]"))) throw new JSONParseException("Not a JSONArray");
 		if (str.length() == 2) return;
 		str = str.substring(1, str.length()-1);
