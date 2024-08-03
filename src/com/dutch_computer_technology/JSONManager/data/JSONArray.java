@@ -115,7 +115,7 @@ public class JSONArray {
 				data.add(null);
 				continue;
 			};
-			if (oValue.matches("\\d+L")) {
+			if (oValue.matches("(-|)\\d+L")) { //Long
 				try {
 					data.add(Long.parseLong(oValue.substring(0, oValue.length()-1)));
 					continue;
@@ -123,7 +123,31 @@ public class JSONArray {
 					throw new JSONParseException("NumberFormatException");
 				}
 			};
-			if (oValue.matches("\\d+")) {
+			if (oValue.matches("(-|)\\d+\\.?\\d*D")) { //Double
+				try {
+					data.add(Double.parseDouble(oValue.substring(0, oValue.length()-1)));
+					continue;
+				} catch(NumberFormatException e) {
+					throw new JSONParseException("NumberFormatException");
+				}
+			};
+			if (oValue.matches("(-|)\\d+\\.?\\d*F")) { //Float
+				try {
+					data.add(Float.parseFloat(oValue.substring(0, oValue.length()-1)));
+					continue;
+				} catch(NumberFormatException e) {
+					throw new JSONParseException("NumberFormatException");
+				}
+			};
+			if (oValue.matches("(-|)\\d+\\.\\d+")) { //Double
+				try {
+					data.add(Double.parseDouble(oValue.substring(0, oValue.length()-1)));
+					continue;
+				} catch(NumberFormatException e) {
+					throw new JSONParseException("NumberFormatException");
+				}
+			};
+			if (oValue.matches("(-|)\\d+")) { //Int
 				try {
 					data.add(Integer.parseInt(oValue));
 					continue;
@@ -171,6 +195,10 @@ public class JSONArray {
 				str += Long.toString((long) oValue) + ((!safeMode) ? "L" : "");
 			} else if (oValue instanceof Integer) {
 				str += Integer.toString((int) oValue);
+			} else if (oValue instanceof Double) {
+				str += Double.toString((double) oValue) + ((!safeMode) ? "D" : "");
+			} else if (oValue instanceof Float) {
+				str += Float.toString((float) oValue) + ((!safeMode) ? "F" : "");
 			} else if (oValue instanceof Boolean) {
 				if ((boolean) oValue) {
 					str += "true";
@@ -319,6 +347,36 @@ public class JSONArray {
 		if (oValue == null) return 0;
 		if (oValue instanceof Long) return (long) oValue;
 		return 0;
+	};
+	
+	/**
+	 * Get Double at given position,
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code 0.0} when out of bounds or when Object is not instanceof Double, Double when in bounds.
+	 */
+	public double getDouble(int i) {
+		if (i < 0 || i > data.size()) return 0.0D;
+		Object oValue = data.get(i);
+		if (oValue == null) return 0.0D;
+		if (oValue instanceof Double) return (double) oValue;
+		return 0.0D;
+	};
+	
+	/**
+	 * Get Float at given position,
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code 0.0} when out of bounds or when Object is not instanceof Float, Float when in bounds.
+	 */
+	public float getFloat(int i) {
+		if (i < 0 || i > data.size()) return 0.0F;
+		Object oValue = data.get(i);
+		if (oValue == null) return 0.0F;
+		if (oValue instanceof Float) return (float) oValue;
+		return 0.0F;
 	};
 	
 	/**

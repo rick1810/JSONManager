@@ -129,7 +129,7 @@ public class JSONObject {
 				o += key.length()+oValue.length();
 				continue;
 			};
-			if (oValue.matches("\\d+L")) {
+			if (oValue.matches("(-|)\\d+L")) { //Long
 				try {
 					data.put(key, Long.parseLong(oValue.substring(0, oValue.length()-1)));
 					o += key.length()+oValue.length();
@@ -138,7 +138,34 @@ public class JSONObject {
 					throw new JSONParseException("NumberFormatException at " + o);
 				}
 			};
-			if (oValue.matches("\\d+")) {
+			if (oValue.matches("(-|)\\d+\\.?\\d*D")) { //Double
+				try {
+					data.put(key, Double.parseDouble(oValue.substring(0, oValue.length()-1)));
+					o += key.length()+oValue.length();
+					continue;
+				} catch(NumberFormatException e) {
+					throw new JSONParseException("NumberFormatException");
+				}
+			};
+			if (oValue.matches("(-|)\\d+\\.?\\d*F")) { //Float
+				try {
+					data.put(key, Float.parseFloat(oValue.substring(0, oValue.length()-1)));
+					o += key.length()+oValue.length();
+					continue;
+				} catch(NumberFormatException e) {
+					throw new JSONParseException("NumberFormatException");
+				}
+			};
+			if (oValue.matches("(-|)\\d+\\.\\d+")) { //Double
+				try {
+					data.put(key, Double.parseDouble(oValue.substring(0, oValue.length()-1)));
+					o += key.length()+oValue.length();
+					continue;
+				} catch(NumberFormatException e) {
+					throw new JSONParseException("NumberFormatException");
+				}
+			};
+			if (oValue.matches("(-|)\\d+")) {
 				try {
 					data.put(key, Integer.parseInt(oValue));
 					o += key.length()+oValue.length();
@@ -189,6 +216,10 @@ public class JSONObject {
 				str += Long.toString((long) oValue) + ((!safeMode) ? "L" : "");
 			} else if (oValue instanceof Integer) {
 				str += Integer.toString((int) oValue);
+			} else if (oValue instanceof Double) {
+				str += Double.toString((double) oValue) + ((!safeMode) ? "D" : "");
+			} else if (oValue instanceof Float) {
+				str += Float.toString((float) oValue) + ((!safeMode) ? "F" : "");
 			} else if (oValue instanceof Boolean) {
 				if ((boolean) oValue) {
 					str += "true";
@@ -317,6 +348,34 @@ public class JSONObject {
 		if (oValue == null) return 0;
 		if (oValue instanceof Long) return (long) oValue;
 		return 0;
+	};
+	
+	/**
+	 * Get Double from key.
+	 * 
+	 * @param key key.
+	 * @return {@code 0.0} when not found, Double when found.
+	 */
+	public double getDouble(String key) {
+		if (key == null) return 0.0D;
+		Object oValue = data.get(key);
+		if (oValue == null) return 0.0D;
+		if (oValue instanceof Double) return (double) oValue;
+		return 0.0D;
+	};
+	
+	/**
+	 * Get Float from key.
+	 * 
+	 * @param key key.
+	 * @return {@code 0.0} when not found, Float when found.
+	 */
+	public float getFloat(String key) {
+		if (key == null) return 0.0F;
+		Object oValue = data.get(key);
+		if (oValue == null) return 0.0F;
+		if (oValue instanceof Float) return (float) oValue;
+		return 0.0F;
 	};
 	
 	/**

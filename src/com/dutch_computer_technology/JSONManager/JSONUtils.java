@@ -8,7 +8,7 @@ public class JSONUtils {
 	 * @return Version of the JSONManager
 	 */
 	public static String version() {
-		return "1.0.6";
+		return "1.0.7";
 	};
 	
 	/**
