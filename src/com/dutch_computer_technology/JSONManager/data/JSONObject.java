@@ -1,13 +1,12 @@
 package com.dutch_computer_technology.JSONManager.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.dutch_computer_technology.JSONManager.JSONUtils;
 import com.dutch_computer_technology.JSONManager.exception.JSONParseException;
+import com.dutch_computer_technology.JSONManager.utils.JSONParser;
+import com.dutch_computer_technology.JSONManager.utils.JSONStringify;
 
 public class JSONObject {
 	
@@ -32,7 +31,7 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Create/Copy a JSONObject from a JSONObject.
+	 * Create &amp; Copy a JSONObject from a JSONObject.
 	 * 
 	 * @param json JSONObject to be copied.
 	 */
@@ -47,142 +46,39 @@ public class JSONObject {
 	 * @throws JSONParseException
 	 */
 	public void parse(String str) throws JSONParseException {
-		if (str == null) throw new JSONParseException("Null");
-		str = JSONUtils.sanitize(str);
-		if (!(str.startsWith("{") && str.endsWith("}"))) throw new JSONParseException("Not a JSONObject");
-		if (str.length() == 2) return;
-		str = str.substring(1, str.length()-1);
-		List<String> objs = new ArrayList<String>();
-		String open = "";
-		int o = 0;
-		for (int i = 0; i < str.length(); i++) {
-			char c = str.charAt(i);
-			if (c == '[' || c == '{') {
-				open += c;
-				continue;
-			};
-			if (c == ']' || c == '}') {
-				if (open.length() == 0) throw new JSONParseException("Illegal bracket at " + (i+2));
-				char b = open.charAt(open.length()-1);
-				if (!((c == ']' && b == '[') || (c == '}' && b == '{'))) throw new JSONParseException("Illegal bracket at " + (i+2));
-				open = open.substring(0, open.length()-1);
-			};
-			if (c == '"') {
-				if (open.length() > 0 && open.charAt(open.length()-1) == '"') {
-					if (open.length() == 0) continue;
-					open = open.substring(0, open.length()-1);
-				} else {
-					open += '"';
-				};
-			};
-			if (open.length() > 0) continue;
-			if (c == ',') {
-				String buf = str.substring(str.charAt(o) == ',' ? o+1 : o, i);
-				objs.add(buf);
-				o = i;
-				continue;
-			};
-			if (i == str.length()-1) {
-				String buf = str.substring(str.charAt(o) == ',' ? o+1 : o);
-				objs.add(buf);
-			};
-		};
-		o = 1; //Offset for { of init
-		for (String obj : objs) {
-			int closeKey = obj.indexOf("\"", 1);
-			if (closeKey == -1) throw new JSONParseException("Key is not a String at " + o);
-			String key = obj.substring(obj.startsWith("\"") ? 1 : 0, closeKey);
-			if (key.length() == 0) throw new JSONParseException("Key is empty at " + o); //Key should always have a value
-			int separatorIndex = obj.indexOf(":", closeKey);
-			if (separatorIndex == -1) throw new JSONParseException("No Separator at " + o);
-			String oValue = obj.substring(separatorIndex+1, obj.length());
-			if (oValue.startsWith("\"") && oValue.endsWith("\"") && oValue.length() > 1) {
-				if (oValue.length() == 2) {
-					data.put(key, "");
-				} else {
-					data.put(key, JSONUtils.unescape(oValue.substring(1, oValue.length()-1)));
-				};
-				continue;
-			};
-			if (oValue.startsWith("{") && oValue.endsWith("}")) {
-				data.put(key, new JSONObject(oValue));
-				o += key.length()+oValue.length()+5;
-				continue;
-			};
-			if (oValue.startsWith("[") && oValue.endsWith("]")) {
-				data.put(key, new JSONArray(oValue));
-				o += key.length()+oValue.length()+5;
-				continue;
-			};
-			if (oValue.equals("true")) {
-				data.put(key, true);
-				o += key.length()+oValue.length();
-				continue;
-			};
-			if (oValue.equals("false")) {
-				data.put(key, false);
-				o += key.length()+oValue.length();
-				continue;
-			};
-			if (oValue.equals("null")) {
-				data.put(key, null);
-				o += key.length()+oValue.length();
-				continue;
-			};
-			if (oValue.matches("(-|)\\d+L")) { //Long
-				try {
-					data.put(key, Long.parseLong(oValue.substring(0, oValue.length()-1)));
-					o += key.length()+oValue.length();
-					continue;
-				} catch(NumberFormatException e) {
-					throw new JSONParseException("NumberFormatException at " + o);
-				}
-			};
-			if (oValue.matches("(-|)\\d+\\.?\\d*D")) { //Double
-				try {
-					data.put(key, Double.parseDouble(oValue.substring(0, oValue.length()-1)));
-					o += key.length()+oValue.length();
-					continue;
-				} catch(NumberFormatException e) {
-					throw new JSONParseException("NumberFormatException");
-				}
-			};
-			if (oValue.matches("(-|)\\d+\\.?\\d*F")) { //Float
-				try {
-					data.put(key, Float.parseFloat(oValue.substring(0, oValue.length()-1)));
-					o += key.length()+oValue.length();
-					continue;
-				} catch(NumberFormatException e) {
-					throw new JSONParseException("NumberFormatException");
-				}
-			};
-			if (oValue.matches("(-|)\\d+\\.\\d+")) { //Double
-				try {
-					data.put(key, Double.parseDouble(oValue.substring(0, oValue.length()-1)));
-					o += key.length()+oValue.length();
-					continue;
-				} catch(NumberFormatException e) {
-					throw new JSONParseException("NumberFormatException");
-				}
-			};
-			if (oValue.matches("(-|)\\d+")) {
-				try {
-					data.put(key, Integer.parseInt(oValue));
-					o += key.length()+oValue.length();
-					continue;
-				} catch(NumberFormatException e) {
-					throw new JSONParseException("NumberFormatException at " + o);
-				}
-			};
-			throw new JSONParseException("Unexpected Object at " + o);
-		};
+		new JSONParser(data, str);
 	};
 	
 	/**
-	 * Create a stringified JSON String.
+	 * Create a stringified JSON String.<br>
+	 * <br>
+	 * By default will save Numbers with a suffix behind it,<br>
+	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
 	 * 
-	 * By default will save Long's with a L behind it,
-	 * when safeMode is {@code true} the Long's will be saved without a L.
+	 * @return Returns a stringified JSON String.
+	 */
+	public String stringify() {
+		return toString(false);
+	};
+	
+	/**
+	 * Create a stringified JSON String.<br>
+	 * <br>
+	 * By default will save Numbers with a suffix behind it,<br>
+	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
+	 * 
+	 * @param safeMode Whenever to save Number suffixes.
+	 * @return Returns a stringified JSON String.
+	 */
+	public String stringify(boolean safeMode) {
+		return toString(safeMode);
+	};
+	
+	/**
+	 * Create a stringified JSON String.<br>
+	 * <br>
+	 * By default will save Numbers with a suffix behind it,<br>
+	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
 	 * 
 	 * @return Returns a stringified JSON String.
 	 */
@@ -192,12 +88,12 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Create a stringified JSON String.
+	 * Create a stringified JSON String.<br>
+	 * <br>
+	 * By default will save Numbers with a suffix behind it,<br>
+	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
 	 * 
-	 * By default will save Long's with a L behind it,
-	 * when safeMode is {@code true} the Long's will be saved without a L.
-	 * 
-	 * @param safeMode Whenever to save Long's with or without a L behind.
+	 * @param safeMode Whenever to save Number suffixes.
 	 * @return Returns a stringified JSON String.
 	 */
 	public String toString(boolean safeMode) {
@@ -206,33 +102,7 @@ public class JSONObject {
 		for (int i = 0; i < keys.length; i++) {
 			str += "\"" + ((String) keys[i]) + "\":";
 			Object oValue = data.get(((String) keys[i]));
-			if (oValue instanceof JSONObject) {
-				str += ((JSONObject) oValue).toString(safeMode);
-			} else if (oValue instanceof JSONArray) {
-				str += ((JSONArray) oValue).toString(safeMode);
-			} else if (oValue instanceof String) {
-				str += "\"" + JSONUtils.escape((String) oValue) + "\"";
-			} else if (oValue instanceof Long) {
-				str += Long.toString((long) oValue) + ((!safeMode) ? "L" : "");
-			} else if (oValue instanceof Integer) {
-				str += Integer.toString((int) oValue);
-			} else if (oValue instanceof Double) {
-				str += Double.toString((double) oValue) + ((!safeMode) ? "D" : "");
-			} else if (oValue instanceof Float) {
-				str += Float.toString((float) oValue) + ((!safeMode) ? "F" : "");
-			} else if (oValue instanceof Boolean) {
-				if ((boolean) oValue) {
-					str += "true";
-				} else {
-					str += "false";
-				};
-			} else {
-				if (oValue == null) {
-					str += "null";
-				} else {
-					str += "\"" + JSONUtils.escape(oValue.toString()) + "\"";
-				};
-			};
+			str += JSONStringify.Stringify(oValue, safeMode);
 			if (i < data.size()-1) str += ",";
 		};
 		return str + "}";
