@@ -25,6 +25,11 @@ System.out.println(jsonC.toString()); // {"A":"B","C":"D"}
 JSONObject jsonD = new JSONObject();
 long l = 5;
 jsonD.put("BigNumber", l);
+System.out.println(jsonD.toString()); // {"BigNumber":5}
+JSONUtils.suffix(true);
 System.out.println(jsonD.toString()); // {"BigNumber":5L}
-System.out.println(jsonD.toString(true)); // {"BigNumber":5}
+JSONUtils.beautifyTab(1);
+System.out.println(jsonD.toString()); // {
+                                            "BigNumber":5L
+                                          }
 ```
