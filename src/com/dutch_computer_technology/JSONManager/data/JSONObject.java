@@ -7,6 +7,7 @@ import java.util.Set;
 import com.dutch_computer_technology.JSONManager.exception.JSONParseException;
 import com.dutch_computer_technology.JSONManager.utils.JSONParser;
 import com.dutch_computer_technology.JSONManager.utils.JSONStringify;
+import com.dutch_computer_technology.JSONManager.utils.JSONUtils;
 
 public class JSONObject {
 	
@@ -17,6 +18,17 @@ public class JSONObject {
 	 */
 	public JSONObject() {
 		data = new HashMap<String, Object>();
+	};
+	
+	/**
+	 * Create &amp; Parse a JSONObject from a Byte array.
+	 * 
+	 * @param bytes Byte array to be parsed.
+	 * @throws JSONParseException
+	 */
+	public JSONObject(byte[] bytes) throws JSONParseException {
+		data = new HashMap<String, Object>();
+		parse(new String(bytes));
 	};
 	
 	/**
@@ -48,64 +60,76 @@ public class JSONObject {
 	public void parse(String str) throws JSONParseException {
 		new JSONParser(data, str);
 	};
-	
+		
 	/**
-	 * Create a stringified JSON String.<br>
-	 * <br>
-	 * By default will save Numbers with a suffix behind it,<br>
-	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
+	 * Create a stringified JSON String.
 	 * 
 	 * @return Returns a stringified JSON String.
 	 */
 	public String stringify() {
-		return toString(false);
+		return toString();
 	};
 	
 	/**
-	 * Create a stringified JSON String.<br>
-	 * <br>
-	 * By default will save Numbers with a suffix behind it,<br>
-	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
-	 * 
-	 * @param safeMode Whenever to save Number suffixes.
-	 * @return Returns a stringified JSON String.
-	 */
-	public String stringify(boolean safeMode) {
-		return toString(safeMode);
-	};
-	
-	/**
-	 * Create a stringified JSON String.<br>
-	 * <br>
-	 * By default will save Numbers with a suffix behind it,<br>
-	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
+	 * Create a stringified JSON String.
 	 * 
 	 * @return Returns a stringified JSON String.
 	 */
 	@Override
 	public String toString() {
-		return toString(false);
+		
+		if (data.isEmpty()) return "{}";
+		
+		StringBuilder str = new StringBuilder("{");
+		int tabs = JSONUtils.beautifyTab();
+		JSONUtils.currentTabs += tabs;
+		
+		Object[] keys = data.keySet().toArray();
+		for (int i = 0; i < keys.length; i++) {
+			
+			if (tabs > 0) str.append("\n").append(JSONUtils.beautifyTabs(JSONUtils.currentTabs));
+			
+			str.append("\"").append((String) keys[i]).append("\":");
+			
+			Object oValue = data.get(keys[i]);
+			str.append(JSONStringify.Stringify(oValue));
+			
+			if (i < data.size()-1) str.append(",");
+			
+		};
+		
+		JSONUtils.currentTabs -= tabs;
+		if (tabs > 0) str.append("\n").append(JSONUtils.beautifyTabs(JSONUtils.currentTabs));
+		return str.append("}").toString();
+		
 	};
 	
 	/**
-	 * Create a stringified JSON String.<br>
-	 * <br>
-	 * By default will save Numbers with a suffix behind it,<br>
-	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
+	 * Create a byte array from JSON.<br>
+	 * ignores beautify rules
 	 * 
-	 * @param safeMode Whenever to save Number suffixes.
-	 * @return Returns a stringified JSON String.
+	 * @return Returns a stringified JSON byte array.
 	 */
-	public String toString(boolean safeMode) {
-		String str = "{";
+	public byte[] toBytes() {
+		
+		if (data.isEmpty()) return "{}".getBytes();
+		
+		StringBuilder str = new StringBuilder("{");
+		
 		Object[] keys = data.keySet().toArray();
 		for (int i = 0; i < keys.length; i++) {
-			str += "\"" + ((String) keys[i]) + "\":";
-			Object oValue = data.get(((String) keys[i]));
-			str += JSONStringify.Stringify(oValue, safeMode);
-			if (i < data.size()-1) str += ",";
+			
+			str.append("\"").append((String) keys[i]).append("\":");
+			
+			Object oValue = data.get(keys[i]);
+			str.append(JSONStringify.Stringify(oValue));
+			
+			if (i < data.size()-1) str.append(",");
+			
 		};
-		return str + "}";
+		
+		return str.append("}").toString().getBytes();
+		
 	};
 	
 	/**
@@ -193,6 +217,19 @@ public class JSONObject {
 	};
 	
 	/**
+	 * Check if value from key is a String.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a String, {@code true} when a String.
+	 */
+	public boolean isString(String key) {
+		if (key == null) return false;
+		Object oValue = data.get(key);
+		if (oValue == null) return false;
+		return (oValue instanceof String);
+	};
+	
+	/**
 	 * Get Integer from key.
 	 * 
 	 * @param key key.
@@ -204,6 +241,19 @@ public class JSONObject {
 		if (oValue == null) return 0;
 		if (oValue instanceof Integer) return (int) oValue;
 		return 0;
+	};
+	
+	/**
+	 * Check if value from key is a Integer.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a Integer, {@code true} when a Integer.
+	 */
+	public boolean isInt(String key) {
+		if (key == null) return false;
+		Object oValue = data.get(key);
+		if (oValue == null) return false;
+		return (oValue instanceof Integer);
 	};
 	
 	/**
@@ -221,6 +271,19 @@ public class JSONObject {
 	};
 	
 	/**
+	 * Check if value from key is a Long.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a Long, {@code true} when a Long.
+	 */
+	public boolean isLong(String key) {
+		if (key == null) return false;
+		Object oValue = data.get(key);
+		if (oValue == null) return false;
+		return (oValue instanceof Long);
+	};
+	
+	/**
 	 * Get Double from key.
 	 * 
 	 * @param key key.
@@ -232,6 +295,19 @@ public class JSONObject {
 		if (oValue == null) return 0.0D;
 		if (oValue instanceof Double) return (double) oValue;
 		return 0.0D;
+	};
+	
+	/**
+	 * Check if value from key is a Double.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a Double, {@code true} when a Double.
+	 */
+	public boolean isDouble(String key) {
+		if (key == null) return false;
+		Object oValue = data.get(key);
+		if (oValue == null) return false;
+		return (oValue instanceof Double);
 	};
 	
 	/**
@@ -249,6 +325,19 @@ public class JSONObject {
 	};
 	
 	/**
+	 * Check if value from key is a Float.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a Float, {@code true} when a Float.
+	 */
+	public boolean isFloat(String key) {
+		if (key == null) return false;
+		Object oValue = data.get(key);
+		if (oValue == null) return false;
+		return (oValue instanceof Float);
+	};
+	
+	/**
 	 * Get Boolean from key.
 	 * 
 	 * @param key key.
@@ -262,8 +351,19 @@ public class JSONObject {
 		return false;
 	};
 	
-	
-	
+	/**
+	 * Check if value from key is a Boolean.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a Boolean, {@code true} when a Boolean.
+	 */
+	public boolean isBoolean(String key) {
+		if (key == null) return false;
+		Object oValue = data.get(key);
+		if (oValue == null) return false;
+		return (oValue instanceof Boolean);
+	};
+		
 	/**
 	 * Get JSONObject from key.
 	 * 
@@ -279,6 +379,19 @@ public class JSONObject {
 	};
 	
 	/**
+	 * Check if value from key is a JSONObject.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a JSONObject, {@code true} when a JSONObject.
+	 */
+	public boolean isJSONObject(String key) {
+		if (key == null) return false;
+		Object oValue = data.get(key);
+		if (oValue == null) return false;
+		return (oValue instanceof JSONObject);
+	};
+	
+	/**
 	 * Get JSONArray from key.
 	 * 
 	 * @param key key.
@@ -290,6 +403,19 @@ public class JSONObject {
 		if (oValue == null) return null;
 		if (oValue instanceof JSONArray) return (JSONArray) oValue;
 		return null;
+	};
+	
+	/**
+	 * Check if value from key is a JSONArray.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a JSONArray, {@code true} when a JSONArray.
+	 */
+	public boolean isJSONArray(String key) {
+		if (key == null) return false;
+		Object oValue = data.get(key);
+		if (oValue == null) return false;
+		return (oValue instanceof JSONArray);
 	};
 	
 };

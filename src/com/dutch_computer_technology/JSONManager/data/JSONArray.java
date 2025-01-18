@@ -6,6 +6,7 @@ import java.util.List;
 import com.dutch_computer_technology.JSONManager.exception.JSONParseException;
 import com.dutch_computer_technology.JSONManager.utils.JSONParser;
 import com.dutch_computer_technology.JSONManager.utils.JSONStringify;
+import com.dutch_computer_technology.JSONManager.utils.JSONUtils;
 
 public class JSONArray {
 	
@@ -16,6 +17,17 @@ public class JSONArray {
 	 */
 	public JSONArray() {
 		data = new ArrayList<Object>();
+	};
+	
+	/**
+	 * Create &amp; Parse a JSONArray from a Byte array.
+	 * 
+	 * @param bytes Byte array to be parsed.
+	 * @throws JSONParseException
+	 */
+	public JSONArray(byte[] bytes) throws JSONParseException {
+		data = new ArrayList<Object>();
+		parse(new String(bytes));
 	};
 	
 	/**
@@ -49,60 +61,67 @@ public class JSONArray {
 	};
 	
 	/**
-	 * Create a stringified JSON String.<br>
-	 * <br>
-	 * By default will save Numbers with a suffix behind it,<br>
-	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
-	 * 
+	 * Create a stringified JSON String.
 	 * @return Returns a stringified JSON String.
 	 */
 	public String stringify() {
-		return toString(false);
+		return toString();
 	};
 	
 	/**
-	 * Create a stringified JSON String.<br>
-	 * <br>
-	 * By default will save Numbers with a suffix behind it,<br>
-	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
-	 * 
-	 * @param safeMode Whenever to save Number suffixes.
-	 * @return Returns a stringified JSON String.
-	 */
-	public String stringify(boolean safeMode) {
-		return toString(safeMode);
-	};
-	
-	/**
-	 * Create a stringified JSON String.<br>
-	 * <br>
-	 * By default will save Numbers with a suffix behind it,<br>
-	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
+	 * Create a stringified JSON String.
 	 * 
 	 * @return Returns a stringified JSON String.
 	 */
 	@Override
 	public String toString() {
-		return toString(false);
+		
+		if (data.isEmpty()) return "[]";
+		
+		StringBuilder str = new StringBuilder("[");
+		int tabs = JSONUtils.beautifyTab();
+		JSONUtils.currentTabs += tabs;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			if (tabs > 0) str.append("\n").append(JSONUtils.beautifyTabs(JSONUtils.currentTabs));
+			
+			Object oValue = data.get(i);
+			str.append(JSONStringify.Stringify(oValue));
+			
+			if (i < data.size()-1) str.append(",");
+			
+		};
+		
+		JSONUtils.currentTabs -= tabs;
+		if (tabs > 0) str.append("\n").append(JSONUtils.beautifyTabs(JSONUtils.currentTabs));
+		return str.append("]").toString();
+		
 	};
 	
 	/**
-	 * Create a stringified JSON String.<br>
-	 * <br>
-	 * By default will save Numbers with a suffix behind it,<br>
-	 * when safeMode is {@code true} Numbers will not be saved with a suffix behind it.
+	 * Create a byte array from JSON.<br>
+	 * ignores beautify rules
 	 * 
-	 * @param safeMode Whenever to save Number suffixes.
-	 * @return Returns a stringified JSON String.
+	 * @return Returns a stringified JSON byte array.
 	 */
-	public String toString(boolean safeMode) {
-		String str = "[";
+	public byte[] toBytes() {
+		
+		if (data.isEmpty()) return "[]".getBytes();
+		
+		StringBuilder str = new StringBuilder("[");
+		
 		for (int i = 0; i < data.size(); i++) {
+			
 			Object oValue = data.get(i);
-			str += JSONStringify.Stringify(oValue, safeMode);
-			if (i < data.size()-1) str += ",";
+			str.append(JSONStringify.Stringify(oValue));
+			
+			if (i < data.size()-1) str.append(",");
+			
 		};
-		return str + "]";
+		
+		return str.append("]").toString().getBytes();
+		
 	};
 	
 	/**
@@ -176,8 +195,192 @@ public class JSONArray {
 	 * 
 	 * @return A new List of Object's inside of the JSONArray.
 	 */
+	public List<Object> getObjects() {
+		return new ArrayList<Object>(data);
+	};
+	/**
+	 * Create a copy List of the JSONArray Object's.
+	 * 
+	 * @return A new List of Object's inside of the JSONArray.
+	 */
 	public List<Object> objs() {
 		return new ArrayList<Object>(data);
+	};
+	
+	/**
+	 * Create a List of String's from JSONArray.
+	 * 
+	 * @return A new List of String's inside of the JSONArray.
+	 */
+	public List<String> getStrings() {
+		
+		List<String> objs = new ArrayList<String>();
+		if (data.isEmpty()) return objs;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			Object oValue = data.get(i);
+			if (oValue == null) continue;
+			if (oValue instanceof String) objs.add((String) oValue);
+			
+		};
+		
+		return objs;
+		
+	};
+	
+	/**
+	 * Create a List of Boolean's from JSONArray.
+	 * 
+	 * @return A new List of Boolean's inside of the JSONArray.
+	 */
+	public List<Boolean> getBooleans() {
+		
+		List<Boolean> objs = new ArrayList<Boolean>();
+		if (data.isEmpty()) return objs;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			Object oValue = data.get(i);
+			if (oValue == null) continue;
+			if (oValue instanceof Boolean) objs.add((boolean) oValue);
+			
+		};
+		
+		return objs;
+		
+	};
+	
+	/**
+	 * Create a List of Integer's from JSONArray.
+	 * 
+	 * @return A new List of Integer's inside of the JSONArray.
+	 */
+	public List<Integer> getInts() {
+		
+		List<Integer> objs = new ArrayList<Integer>();
+		if (data.isEmpty()) return objs;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			Object oValue = data.get(i);
+			if (oValue == null) continue;
+			if (oValue instanceof Integer) objs.add((int) oValue);
+			
+		};
+		
+		return objs;
+		
+	};
+	
+	/**
+	 * Create a List of Long's from JSONArray.
+	 * 
+	 * @return A new List of Long's inside of the JSONArray.
+	 */
+	public List<Long> getLongs() {
+		
+		List<Long> objs = new ArrayList<Long>();
+		if (data.isEmpty()) return objs;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			Object oValue = data.get(i);
+			if (oValue == null) continue;
+			if (oValue instanceof Long) objs.add((long) oValue);
+			
+		};
+		
+		return objs;
+		
+	};
+	
+	/**
+	 * Create a List of Float's from JSONArray.
+	 * 
+	 * @return A new List of Float's inside of the JSONArray.
+	 */
+	public List<Float> getFloats() {
+		
+		List<Float> objs = new ArrayList<Float>();
+		if (data.isEmpty()) return objs;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			Object oValue = data.get(i);
+			if (oValue == null) continue;
+			if (oValue instanceof Float) objs.add((float) oValue);
+			
+		};
+		
+		return objs;
+		
+	};
+	
+	/**
+	 * Create a List of Double's from JSONArray.
+	 * 
+	 * @return A new List of Double's inside of the JSONArray.
+	 */
+	public List<Double> getDoubles() {
+		
+		List<Double> objs = new ArrayList<Double>();
+		if (data.isEmpty()) return objs;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			Object oValue = data.get(i);
+			if (oValue == null) continue;
+			if (oValue instanceof Double) objs.add((double) oValue);
+			
+		};
+		
+		return objs;
+		
+	};
+	
+	/**
+	 * Create a List of JSONObject's from JSONArray.
+	 * 
+	 * @return A new List of JSONObject's inside of the JSONArray.
+	 */
+	public List<JSONObject> getJSONObjects() {
+		
+		List<JSONObject> objs = new ArrayList<JSONObject>();
+		if (data.isEmpty()) return objs;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			Object oValue = data.get(i);
+			if (oValue == null) continue;
+			if (oValue instanceof JSONObject) objs.add((JSONObject) oValue);
+			
+		};
+		
+		return objs;
+		
+	};
+	
+	/**
+	 * Create a List of JSONArray's from JSONArray.
+	 * 
+	 * @return A new List of JSONArray's inside of the JSONArray.
+	 */
+	public List<JSONArray> getJSONArrays() {
+		
+		List<JSONArray> objs = new ArrayList<JSONArray>();
+		if (data.isEmpty()) return objs;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			Object oValue = data.get(i);
+			if (oValue == null) continue;
+			if (oValue instanceof JSONArray) objs.add((JSONArray) oValue);
+			
+		};
+		
+		return objs;
+		
 	};
 	
 	/**
@@ -208,6 +411,19 @@ public class JSONArray {
 	};
 	
 	/**
+	 * Check if value from key is a String.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a String, {@code true} when a String.
+	 */
+	public boolean isString(int i) {
+		if (i < 0 || i > data.size()) return false;
+		Object oValue = data.get(i);
+		if (oValue == null) return false;
+		return (oValue instanceof String);
+	};
+	
+	/**
 	 * Get Integer at given position,<br>
 	 * must be inbound 0-size.
 	 * 
@@ -221,7 +437,20 @@ public class JSONArray {
 		if (oValue instanceof Integer) return (int) oValue;
 		return 0;
 	};
-
+	
+	/**
+	 * Check if value from key is a Integer.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a Integer, {@code true} when a Integer.
+	 */
+	public boolean isInt(int i) {
+		if (i < 0 || i > data.size()) return false;
+		Object oValue = data.get(i);
+		if (oValue == null) return false;
+		return (oValue instanceof Integer);
+	};
+	
 	/**
 	 * Get Long at given position,<br>
 	 * must be inbound 0-size.
@@ -235,6 +464,19 @@ public class JSONArray {
 		if (oValue == null) return 0;
 		if (oValue instanceof Long) return (long) oValue;
 		return 0;
+	};
+	
+	/**
+	 * Check if value from key is a Long.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a Long, {@code true} when a Long.
+	 */
+	public boolean isLong(int i) {
+		if (i < 0 || i > data.size()) return false;
+		Object oValue = data.get(i);
+		if (oValue == null) return false;
+		return (oValue instanceof Long);
 	};
 	
 	/**
@@ -253,6 +495,19 @@ public class JSONArray {
 	};
 	
 	/**
+	 * Check if value from key is a Double.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a Double, {@code true} when a Double.
+	 */
+	public boolean isDouble(int i) {
+		if (i < 0 || i > data.size()) return false;
+		Object oValue = data.get(i);
+		if (oValue == null) return false;
+		return (oValue instanceof Double);
+	};
+	
+	/**
 	 * Get Float at given position,<br>
 	 * must be inbound 0-size.
 	 * 
@@ -265,6 +520,19 @@ public class JSONArray {
 		if (oValue == null) return 0.0F;
 		if (oValue instanceof Float) return (float) oValue;
 		return 0.0F;
+	};
+	
+	/**
+	 * Check if value from key is a Float.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a Float, {@code true} when a Float.
+	 */
+	public boolean isFloat(int i) {
+		if (i < 0 || i > data.size()) return false;
+		Object oValue = data.get(i);
+		if (oValue == null) return false;
+		return (oValue instanceof Float);
 	};
 	
 	/**
@@ -282,7 +550,18 @@ public class JSONArray {
 		return false;
 	};
 	
-	
+	/**
+	 * Check if value from key is a Boolean.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a Boolean, {@code true} when a Boolean.
+	 */
+	public boolean isBoolean(int i) {
+		if (i < 0 || i > data.size()) return false;
+		Object oValue = data.get(i);
+		if (oValue == null) return false;
+		return (oValue instanceof Boolean);
+	};
 	
 	/**
 	 * Get JSONObject at given position,<br>
@@ -300,6 +579,19 @@ public class JSONArray {
 	};
 	
 	/**
+	 * Check if value from key is a JSONObject.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a JSONObject, {@code true} when a JSONObject.
+	 */
+	public boolean isJSONObject(int i) {
+		if (i < 0 || i > data.size()) return false;
+		Object oValue = data.get(i);
+		if (oValue == null) return false;
+		return (oValue instanceof JSONObject);
+	};
+	
+	/**
 	 * Get JSONArray at given position,<br>
 	 * must be inbound 0-size.
 	 * 
@@ -312,6 +604,19 @@ public class JSONArray {
 		if (oValue == null) return null;
 		if (oValue instanceof JSONArray) return (JSONArray) oValue;
 		return null;
+	};
+	
+	/**
+	 * Check if value from key is a JSONArray.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a JSONArray, {@code true} when a JSONArray.
+	 */
+	public boolean isJSONArray(int i) {
+		if (i < 0 || i > data.size()) return false;
+		Object oValue = data.get(i);
+		if (oValue == null) return false;
+		return (oValue instanceof JSONArray);
 	};
 	
 };

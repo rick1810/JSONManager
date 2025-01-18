@@ -12,9 +12,10 @@ public class JSONParser {
 	
 	//JSONObject
 	/**
+	 * Parse a JSONObject from a String.
 	 * 
-	 * @param data
-	 * @param str
+	 * @param data The Map to store the parsed data.
+	 * @param str String to be parsed.
 	 * @throws JSONParseException
 	 */
 	public JSONParser(Map<String, Object> data, String str) throws JSONParseException {
@@ -95,6 +96,13 @@ public class JSONParser {
 	};
 	
 	//JSONArray
+	/**
+	 * Parse a JSONParser from a String.
+	 * 
+	 * @param data The List to store the parsed data.
+	 * @param str String to be parsed.
+	 * @throws JSONParseException
+	 */
 	public JSONParser(List<Object> data, String str) throws JSONParseException {
 		
 		if (data == null) throw new JSONParseException("Unexpected Null"); //Should never be Null.
@@ -159,6 +167,13 @@ public class JSONParser {
 		
 	};
 	
+	/**
+	 * Parse a Value from a String.
+	 * 
+	 * @param str String to be parsed.
+	 * @return Returns a Object value.
+	 * @throws JSONParseException
+	 */
 	private Object parseValue(String str) throws JSONParseException {
 		
 		//String
@@ -168,44 +183,50 @@ public class JSONParser {
 		};
 		
 		//JSONObject
-		if (str.startsWith("{") && str.endsWith("}")) {
-			return new JSONObject(str);
-		};
+		if (str.startsWith("{") && str.endsWith("}")) return new JSONObject(str);
 		
 		//Array
-		if (str.startsWith("[") && str.endsWith("]")) {
-			return new JSONArray(str);
-		};
+		if (str.startsWith("[") && str.endsWith("]")) return new JSONArray(str);
 		
 		//Boolean
-		if (str.equals("true")) {
-			return true;
-		};
-		if (str.equals("false")) {
-			return false;
-		};
+		if (str.equals("true")) return true;
+		if (str.equals("false")) return false;
 		
 		//Null
-		if (str.equals("null")) {
-			return null;
-		};
+		if (str.equals("null")) return null;
 		
 		//Numbers
-		try {
+		if (str.matches("^-?\\d+(\\.\\d*)?([eE]-?\\d+)?[ILDF]?$")) {
 			
-			if (str.matches("^(-|)\\d+$")) return Integer.parseInt(str);
+			try {
+				
+				char suffix = str.charAt(str.length() - 1);
+				String num = str;
+				if (suffix == 'I' || suffix == 'L' || suffix == 'D' || suffix == 'F') num = str.substring(0, str.length()-1);
+				
+				switch(suffix) {
+					//Integer
+					case 'I':
+						return Integer.parseInt(num);
+					//Long
+					case 'L':
+						return Long.parseLong(num);
+					//Double
+					case 'D':
+						return Double.parseDouble(num);
+					//Float
+					case 'F':
+						return Float.parseFloat(num);
+					//default, Long/Double
+					default:
+						if (num.contains(".")) return Double.parseDouble(num);
+						return Long.parseLong(num);
+				}
+				
+			} catch(NumberFormatException e) {
+				throw new JSONParseException("NumberFormatException");
+			}
 			
-			//Long
-			if (str.matches("^(-|)\\d+L$")) return Long.parseLong(str.substring(0, str.length()-1));
-			
-			//Double
-			if (str.matches("^(-|)\\d+\\.?\\d*(D|)$")) return Double.parseDouble(str.replaceAll("D$", ""));
-			
-			//Float
-			if (str.matches("^(-|)\\d+\\.?\\d*F$")) return Float.parseFloat(str.substring(0, str.length()-1));
-			
-		} catch(NumberFormatException e) {
-			throw new JSONParseException("NumberFormatException");
 		};
 		
 		throw new JSONParseException("Unexpected Object");
