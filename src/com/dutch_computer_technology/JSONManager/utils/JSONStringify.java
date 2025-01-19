@@ -20,7 +20,7 @@ public class JSONStringify {
 		if (obj == null) return "null";
 		
 		//String
-		if (obj instanceof String) return "\"" + JSONUtils.escape((String) obj) + "\"";
+		if (obj instanceof String) return new StringBuilder("\"").append(JSONUtils.escape((String) obj)).append("\"").toString();
 		
 		//Object
 		if (obj instanceof JSONObject) return ((JSONObject) obj).stringify();
@@ -36,17 +36,17 @@ public class JSONStringify {
 			boolean suffix = JSONUtils.suffix();
 			
 			//Integer
-			if (obj instanceof Integer) return Integer.toString((int) obj) + (suffix ? "I" : "");
+			if (obj instanceof Integer) return new StringBuilder(Integer.toString((int) obj)).append(suffix ? "I" : "").toString();
 			
 			//Long
-			if (obj instanceof Long) return Long.toString((long) obj) + (suffix ? "L" : "");
+			if (obj instanceof Long) return new StringBuilder(Long.toString((long) obj)).append(suffix ? "L" : "").toString();
 			
 			//Double
 			if (obj instanceof Double) {
 				
 				double dob = (double) obj;
 				if (!Double.isFinite(dob)) return "null";
-				return Double.toString(dob) + (suffix ? "D" : "");
+				return new StringBuilder(Double.toString(dob)).append(suffix ? "D" : "").toString();
 				
 			};
 			
@@ -55,7 +55,8 @@ public class JSONStringify {
 				
 				float flo = (float) obj;
 				if (!Float.isFinite(flo)) return "null";
-				return Float.toString(flo) + (suffix ? "F" : "");
+				return new StringBuilder(Float.toString(flo)).append(suffix ? "F" : "").toString();
+				
 			};
 		
 		//Object
@@ -71,7 +72,7 @@ public class JSONStringify {
 			e.printStackTrace();
 		};
 		
-		return "\"" + JSONUtils.escape(obj.toString()) + "\"";
+		return new StringBuilder("\"").append(JSONUtils.escape(obj.toString())).append("\"").toString();
 		
 	};
 	

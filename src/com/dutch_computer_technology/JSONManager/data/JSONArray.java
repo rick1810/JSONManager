@@ -195,16 +195,49 @@ public class JSONArray {
 	 * 
 	 * @return A new List of Object's inside of the JSONArray.
 	 */
-	public List<Object> getObjects() {
+	public List<Object> objs() {
 		return new ArrayList<Object>(data);
 	};
+	
 	/**
 	 * Create a copy List of the JSONArray Object's.
 	 * 
 	 * @return A new List of Object's inside of the JSONArray.
 	 */
-	public List<Object> objs() {
+	public List<Object> getObjects() {
 		return new ArrayList<Object>(data);
+	};
+	
+	/**
+	 * Create a copy List of the JSONArray Object's,
+	 * that are part of the given Class.
+	 * 
+	 * @param cls Class to make a List of.
+	 * @return {@code null} When cls is null, A new List of {@code cls} Object's inside of the JSONArray.
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getObjects(Class<?> cls) {
+		
+		if (cls == null) return null;
+		
+		List<T> objs = new ArrayList<>();
+		if (data.isEmpty()) return objs;
+		
+		for (Object oValue : data) {
+			
+			if (oValue == null) continue;
+			if (cls.isInstance(oValue)) {
+				
+				try {
+					objs.add((T) cls.cast(oValue));
+				} catch(ClassCastException ignore) {};
+				
+			};
+			
+		};
+		
+		return objs;
+		
 	};
 	
 	/**
@@ -213,20 +246,7 @@ public class JSONArray {
 	 * @return A new List of String's inside of the JSONArray.
 	 */
 	public List<String> getStrings() {
-		
-		List<String> objs = new ArrayList<String>();
-		if (data.isEmpty()) return objs;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			Object oValue = data.get(i);
-			if (oValue == null) continue;
-			if (oValue instanceof String) objs.add((String) oValue);
-			
-		};
-		
-		return objs;
-		
+		return getObjects(String.class);
 	};
 	
 	/**
@@ -235,20 +255,7 @@ public class JSONArray {
 	 * @return A new List of Boolean's inside of the JSONArray.
 	 */
 	public List<Boolean> getBooleans() {
-		
-		List<Boolean> objs = new ArrayList<Boolean>();
-		if (data.isEmpty()) return objs;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			Object oValue = data.get(i);
-			if (oValue == null) continue;
-			if (oValue instanceof Boolean) objs.add((boolean) oValue);
-			
-		};
-		
-		return objs;
-		
+		return getObjects(Boolean.class);
 	};
 	
 	/**
@@ -257,20 +264,7 @@ public class JSONArray {
 	 * @return A new List of Integer's inside of the JSONArray.
 	 */
 	public List<Integer> getInts() {
-		
-		List<Integer> objs = new ArrayList<Integer>();
-		if (data.isEmpty()) return objs;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			Object oValue = data.get(i);
-			if (oValue == null) continue;
-			if (oValue instanceof Integer) objs.add((int) oValue);
-			
-		};
-		
-		return objs;
-		
+		return getObjects(Integer.class);
 	};
 	
 	/**
@@ -279,20 +273,7 @@ public class JSONArray {
 	 * @return A new List of Long's inside of the JSONArray.
 	 */
 	public List<Long> getLongs() {
-		
-		List<Long> objs = new ArrayList<Long>();
-		if (data.isEmpty()) return objs;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			Object oValue = data.get(i);
-			if (oValue == null) continue;
-			if (oValue instanceof Long) objs.add((long) oValue);
-			
-		};
-		
-		return objs;
-		
+		return getObjects(Long.class);
 	};
 	
 	/**
@@ -301,20 +282,7 @@ public class JSONArray {
 	 * @return A new List of Float's inside of the JSONArray.
 	 */
 	public List<Float> getFloats() {
-		
-		List<Float> objs = new ArrayList<Float>();
-		if (data.isEmpty()) return objs;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			Object oValue = data.get(i);
-			if (oValue == null) continue;
-			if (oValue instanceof Float) objs.add((float) oValue);
-			
-		};
-		
-		return objs;
-		
+		return getObjects(Float.class);
 	};
 	
 	/**
@@ -323,20 +291,7 @@ public class JSONArray {
 	 * @return A new List of Double's inside of the JSONArray.
 	 */
 	public List<Double> getDoubles() {
-		
-		List<Double> objs = new ArrayList<Double>();
-		if (data.isEmpty()) return objs;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			Object oValue = data.get(i);
-			if (oValue == null) continue;
-			if (oValue instanceof Double) objs.add((double) oValue);
-			
-		};
-		
-		return objs;
-		
+		return getObjects(Double.class);
 	};
 	
 	/**
@@ -345,20 +300,7 @@ public class JSONArray {
 	 * @return A new List of JSONObject's inside of the JSONArray.
 	 */
 	public List<JSONObject> getJSONObjects() {
-		
-		List<JSONObject> objs = new ArrayList<JSONObject>();
-		if (data.isEmpty()) return objs;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			Object oValue = data.get(i);
-			if (oValue == null) continue;
-			if (oValue instanceof JSONObject) objs.add((JSONObject) oValue);
-			
-		};
-		
-		return objs;
-		
+		return getObjects(JSONObject.class);
 	};
 	
 	/**
@@ -367,20 +309,7 @@ public class JSONArray {
 	 * @return A new List of JSONArray's inside of the JSONArray.
 	 */
 	public List<JSONArray> getJSONArrays() {
-		
-		List<JSONArray> objs = new ArrayList<JSONArray>();
-		if (data.isEmpty()) return objs;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			Object oValue = data.get(i);
-			if (oValue == null) continue;
-			if (oValue instanceof JSONArray) objs.add((JSONArray) oValue);
-			
-		};
-		
-		return objs;
-		
+		return getObjects(JSONArray.class);
 	};
 	
 	/**
@@ -388,11 +317,56 @@ public class JSONArray {
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code null} when out of bounds, Object when in bounds.
+	 * @return {@code null} when out of bounds or not found, Object when found.
 	 */
 	public Object get(int i) {
-		if (i < 0 || i > data.size()) return null;
-		return data.get(i);
+		return get(i, null, null);
+	};
+	
+	/**
+	 * Get Object at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @return {@code def} when out of bounds or not found, Object when found.
+	 */
+	public Object get(int i, Object def) {
+		return get(i, def, null);
+	};
+	
+	/**
+	 * Get Object from key.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @param cls Class to check for.
+	 * @return {@code def} when out of bounds or not found, {@code cls} Object when found.
+	 */
+	public Object get(int i, Object def, Class<?> cls) {
+		if (i < 0 || i > data.size()) return def;
+		Object oValue = data.get(i);
+		if (oValue == null) return def;
+		if (cls == null) return oValue;
+		if (cls.isInstance(oValue)) return oValue;
+		return def;
+	};
+	
+	/**
+	 * Check if Object at given position,<br>
+	 * is part of the given Class.<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param cls Class to check for.
+	 * @return {@code false} when out of bounds or not the given Class, {@code true} when the given Class.
+	 */
+	public boolean isValue(int i, Class<?> cls) {
+		if (i < 0 || i > data.size()) return false;
+		if (cls == null) return false;
+		Object oValue = data.get(i);
+		if (oValue == null) return false;
+		return cls.isInstance(oValue);
 	};
 	
 	/**
@@ -400,27 +374,21 @@ public class JSONArray {
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code null} when out of bounds or when Object is not instanceof String, String when in bounds.
+	 * @return {@code null} when out of bounds or when not a String, String when found.
 	 */
 	public String getString(int i) {
-		if (i < 0 || i > data.size()) return null;
-		Object oValue = data.get(i);
-		if (oValue == null) return null;
-		if (oValue instanceof String) return (String) oValue;
-		return null;
+		return (String) get(i, null, String.class);
 	};
-	
+		
 	/**
-	 * Check if value from key is a String.
+	 * Check if Object at given position is a String,<br>
+	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code false} when not a String, {@code true} when a String.
+	 * @return {@code false} when out of bounds or not a String, {@code true} when a String.
 	 */
 	public boolean isString(int i) {
-		if (i < 0 || i > data.size()) return false;
-		Object oValue = data.get(i);
-		if (oValue == null) return false;
-		return (oValue instanceof String);
+		return isValue(i, String.class);
 	};
 	
 	/**
@@ -428,27 +396,21 @@ public class JSONArray {
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code 0} when out of bounds or when Object is not instanceof Integer, Integer when in bounds.
+	 * @return {@code 0} when out of bounds or when not a Integer, Integer when found.
 	 */
 	public int getInt(int i) {
-		if (i < 0 || i > data.size()) return 0;
-		Object oValue = data.get(i);
-		if (oValue == null) return 0;
-		if (oValue instanceof Integer) return (int) oValue;
-		return 0;
+		return (int) get(i, 0, Integer.class);
 	};
 	
 	/**
-	 * Check if value from key is a Integer.
+	 * Check if Object at given position is a Integer,<br>
+	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code false} when not a Integer, {@code true} when a Integer.
+	 * @return {@code false} when out of bounds or not a Integer, {@code true} when a Integer.
 	 */
 	public boolean isInt(int i) {
-		if (i < 0 || i > data.size()) return false;
-		Object oValue = data.get(i);
-		if (oValue == null) return false;
-		return (oValue instanceof Integer);
+		return isValue(i, Integer.class);
 	};
 	
 	/**
@@ -456,27 +418,21 @@ public class JSONArray {
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code 0} when out of bounds or when Object is not instanceof Long, Long when in bounds.
+	 * @return {@code 0} when out of bounds or when not a Long, Long when found.
 	 */
 	public long getLong(int i) {
-		if (i < 0 || i > data.size()) return 0;
-		Object oValue = data.get(i);
-		if (oValue == null) return 0;
-		if (oValue instanceof Long) return (long) oValue;
-		return 0;
+		return (long) get(i, 0, Long.class);
 	};
 	
 	/**
-	 * Check if value from key is a Long.
+	 * Check if Object at given position is a Long,<br>
+	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code false} when not a Long, {@code true} when a Long.
+	 * @return {@code false} when out of bounds or not a Long, {@code true} when a Long.
 	 */
 	public boolean isLong(int i) {
-		if (i < 0 || i > data.size()) return false;
-		Object oValue = data.get(i);
-		if (oValue == null) return false;
-		return (oValue instanceof Long);
+		return isValue(i, Long.class);
 	};
 	
 	/**
@@ -484,27 +440,21 @@ public class JSONArray {
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code 0.0} when out of bounds or when Object is not instanceof Double, Double when in bounds.
+	 * @return {@code 0.0} when out of bounds or when not a Double, Double when found.
 	 */
 	public double getDouble(int i) {
-		if (i < 0 || i > data.size()) return 0.0D;
-		Object oValue = data.get(i);
-		if (oValue == null) return 0.0D;
-		if (oValue instanceof Double) return (double) oValue;
-		return 0.0D;
+		return (double) get(i, 0.0D, Double.class);
 	};
 	
 	/**
-	 * Check if value from key is a Double.
+	 * Check if Object at given position is a Double,<br>
+	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code false} when not a Double, {@code true} when a Double.
+	 * @return {@code false} when out of bounds or not a Double, {@code true} when a Double.
 	 */
 	public boolean isDouble(int i) {
-		if (i < 0 || i > data.size()) return false;
-		Object oValue = data.get(i);
-		if (oValue == null) return false;
-		return (oValue instanceof Double);
+		return isValue(i, Double.class);
 	};
 	
 	/**
@@ -512,27 +462,21 @@ public class JSONArray {
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code 0.0} when out of bounds or when Object is not instanceof Float, Float when in bounds.
+	 * @return {@code 0.0} when out of bounds or when not a Float, Float when found.
 	 */
 	public float getFloat(int i) {
-		if (i < 0 || i > data.size()) return 0.0F;
-		Object oValue = data.get(i);
-		if (oValue == null) return 0.0F;
-		if (oValue instanceof Float) return (float) oValue;
-		return 0.0F;
+		return (float) get(i, 0.0F, Float.class);
 	};
 	
 	/**
-	 * Check if value from key is a Float.
+	 * Check if Object at given position is a Float,<br>
+	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code false} when not a Float, {@code true} when a Float.
+	 * @return {@code false} when out of bounds or not a Float, {@code true} when a Float.
 	 */
 	public boolean isFloat(int i) {
-		if (i < 0 || i > data.size()) return false;
-		Object oValue = data.get(i);
-		if (oValue == null) return false;
-		return (oValue instanceof Float);
+		return isValue(i, Float.class);
 	};
 	
 	/**
@@ -540,27 +484,21 @@ public class JSONArray {
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code false} when out of bounds or when Object is not instanceof Boolean, Boolean when in bounds.
+	 * @return {@code false} when out of bounds or when not a Boolean, Boolean when found.
 	 */
 	public boolean getBoolean(int i) {
-		if (i < 0 || i > data.size()) return false;
-		Object oValue = data.get(i);
-		if (oValue == null) return false;
-		if (oValue instanceof Boolean) return (Boolean) oValue;
-		return false;
+		return (boolean) get(i, false, Boolean.class);
 	};
 	
 	/**
-	 * Check if value from key is a Boolean.
+	 * Check if Object at given position is a Boolean,<br>
+	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code false} when not a Boolean, {@code true} when a Boolean.
+	 * @return {@code false} when out of bounds or not a Boolean, {@code true} when a Boolean.
 	 */
 	public boolean isBoolean(int i) {
-		if (i < 0 || i > data.size()) return false;
-		Object oValue = data.get(i);
-		if (oValue == null) return false;
-		return (oValue instanceof Boolean);
+		return isValue(i, Boolean.class);
 	};
 	
 	/**
@@ -568,27 +506,21 @@ public class JSONArray {
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code null} when out of bounds or when Object is not instanceof JSONObject, JSONObject when in bounds.
+	 * @return {@code null} when out of bounds or when not a JSONObject, JSONObject when found.
 	 */
 	public JSONObject getJSONObject(int i) {
-		if (i < 0 || i > data.size()) return null;
-		Object oValue = data.get(i);
-		if (oValue == null) return null;
-		if (oValue instanceof JSONObject) return (JSONObject) oValue;
-		return null;
+		return (JSONObject) get(i, null, JSONObject.class);
 	};
 	
 	/**
-	 * Check if value from key is a JSONObject.
+	 * Check if Object at given position is a JSONObject,<br>
+	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code false} when not a JSONObject, {@code true} when a JSONObject.
+	 * @return {@code false} when out of bounds or not a JSONObject, {@code true} when a JSONObject.
 	 */
 	public boolean isJSONObject(int i) {
-		if (i < 0 || i > data.size()) return false;
-		Object oValue = data.get(i);
-		if (oValue == null) return false;
-		return (oValue instanceof JSONObject);
+		return isValue(i, JSONObject.class);
 	};
 	
 	/**
@@ -596,27 +528,21 @@ public class JSONArray {
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code null} when out of bounds or when Object is not instanceof JSONArray, JSONArray when in bounds.
+	 * @return {@code null} when out of bounds or when not a JSONArray, JSONArray when found.
 	 */
 	public JSONArray getJSONArray(int i) {
-		if (i < 0 || i > data.size()) return null;
-		Object oValue = data.get(i);
-		if (oValue == null) return null;
-		if (oValue instanceof JSONArray) return (JSONArray) oValue;
-		return null;
+		return (JSONArray) get(i, null, JSONArray.class);
 	};
 	
 	/**
-	 * Check if value from key is a JSONArray.
+	 * Check if Object at given position is a JSONArray,<br>
+	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code false} when not a JSONArray, {@code true} when a JSONArray.
+	 * @return {@code false} when out of bounds or not a JSONArray, {@code true} when a JSONArray.
 	 */
 	public boolean isJSONArray(int i) {
-		if (i < 0 || i > data.size()) return false;
-		Object oValue = data.get(i);
-		if (oValue == null) return false;
-		return (oValue instanceof JSONArray);
+		return isValue(i, JSONArray.class);
 	};
 	
 };

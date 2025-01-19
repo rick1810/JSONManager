@@ -32,14 +32,14 @@ public class JSONParser {
 		
 		List<String> objs = new ArrayList<String>();
 		
-		String open = "";
+		StringBuilder open = new StringBuilder();
 		int o = 0;
 		
 		for (int i = 0; i < str.length(); i++) {
 			
 			char c = str.charAt(i);
 			if (c == '[' || c == '{') {
-				open += c;
+				open.append(c);
 				continue;
 			};
 			
@@ -47,15 +47,15 @@ public class JSONParser {
 				if (open.length() == 0) throw new JSONParseException("Illegal bracket at " + (i+2));
 				char b = open.charAt(open.length()-1);
 				if (!((c == ']' && b == '[') || (c == '}' && b == '{'))) throw new JSONParseException("Illegal bracket at " + (i+2));
-				open = open.substring(0, open.length()-1);
+				open.setLength(open.length()-1);
 			};
 			
 			if (c == '"') {
 				if (open.length() > 0 && open.charAt(open.length()-1) == '"') {
 					if (open.length() == 0) continue;
-					open = open.substring(0, open.length()-1);
+					open.setLength(open.length()-1);
 				} else {
-					open += '"';
+					open.append('"');
 				};
 			};
 			
@@ -117,7 +117,7 @@ public class JSONParser {
 		
 		List<String> objs = new ArrayList<String>();
 		
-		String open = "";
+		StringBuilder open = new StringBuilder();
 		int o = 0;
 		
 		for (int i = 0; i < str.length(); i++) {
@@ -125,21 +125,21 @@ public class JSONParser {
 			char c = str.charAt(i);
 			
 			if (c == '[' || c == '{') {
-				open += c;
+				open.append(c);
 				continue;
 			};
 			
 			if (c == ']' || c == '}') {
 				if (open.length() == 0) continue;
-				open = open.substring(0, open.length()-1);
+				open.setLength(open.length()-1);
 			};
 			
 			if (c == '"') {
 				if (open.length() > 0 && open.charAt(open.length()-1) == '"') {
 					if (open.length() == 0) continue;
-					open = open.substring(0, open.length()-1);
+					open.setLength(open.length()-1);
 				} else {
-					open += '"';
+					open.append('"');
 				};
 			};
 			

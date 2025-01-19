@@ -60,7 +60,7 @@ public class JSONObject {
 	public void parse(String str) throws JSONParseException {
 		new JSONParser(data, str);
 	};
-		
+	
 	/**
 	 * Create a stringified JSON String.
 	 * 
@@ -183,6 +183,19 @@ public class JSONObject {
 	};
 	
 	/**
+	 * Add a key with value to the JSONObject,
+	 * when this key doesn't exist.
+	 * 
+	 * @param key key to be added.
+	 * @param value Object of the key to be added.
+	 */
+	public void putWhenAbsent(String key, Object value) {
+		if (key == null) return;
+		if (data.containsKey(key)) return;
+		data.put(key, value);
+	};
+	
+	/**
 	 * Remove a key with it's value from the JSONObject.
 	 * 
 	 * @param key key to be removed.
@@ -198,8 +211,50 @@ public class JSONObject {
 	 * @return {@code null} when not found, Object when found.
 	 */
 	public Object get(String key) {
-		if (key == null) return null;
-		return data.get(key);
+		return get(key, null, null);
+	};
+	
+	/**
+	 * Get Object from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, Object when found.
+	 */
+	public Object get(String key, Object def) {
+		return get(key, def, null);
+	};
+	
+	/**
+	 * Get Object from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @param cls Class to check for.
+	 * @return {@code def} when not found, {@code cls} Object when found.
+	 */
+	public Object get(String key, Object def, Class<?> cls) {
+		if (key == null) return def;
+		Object oValue = data.get(key);
+		if (oValue == null) return def;
+		if (cls == null) return oValue;
+		if (cls.isInstance(oValue)) return oValue;
+		return def;
+	};
+	
+	/**
+	 * Check if value from key is a given Class.
+	 * 
+	 * @param key key.
+	 * @param cls Class to check for.
+	 * @return {@code false} when not the given Class, {@code true} when the given Class.
+	 */
+	public boolean isValue(String key, Class<?> cls) {
+		if (key == null) return false;
+		if (cls == null) return false;
+		Object oValue = data.get(key);
+		if (oValue == null) return false;
+		return cls.isInstance(oValue);
 	};
 	
 	/**
@@ -209,11 +264,7 @@ public class JSONObject {
 	 * @return {@code null} when not found, String when found.
 	 */
 	public String getString(String key) {
-		if (key == null) return null;
-		Object oValue = data.get(key);
-		if (oValue == null) return null;
-		if (oValue instanceof String) return (String) oValue;
-		return null;
+		return (String) get(key, null, String.class);
 	};
 	
 	/**
@@ -223,10 +274,7 @@ public class JSONObject {
 	 * @return {@code false} when not a String, {@code true} when a String.
 	 */
 	public boolean isString(String key) {
-		if (key == null) return false;
-		Object oValue = data.get(key);
-		if (oValue == null) return false;
-		return (oValue instanceof String);
+		return isValue(key, String.class);
 	};
 	
 	/**
@@ -236,11 +284,7 @@ public class JSONObject {
 	 * @return {@code 0} when not found, Integer when found.
 	 */
 	public int getInt(String key) {
-		if (key == null) return 0;
-		Object oValue = data.get(key);
-		if (oValue == null) return 0;
-		if (oValue instanceof Integer) return (int) oValue;
-		return 0;
+		return (int) get(key, 0, Integer.class);
 	};
 	
 	/**
@@ -250,10 +294,7 @@ public class JSONObject {
 	 * @return {@code false} when not a Integer, {@code true} when a Integer.
 	 */
 	public boolean isInt(String key) {
-		if (key == null) return false;
-		Object oValue = data.get(key);
-		if (oValue == null) return false;
-		return (oValue instanceof Integer);
+		return isValue(key, Integer.class);
 	};
 	
 	/**
@@ -263,11 +304,7 @@ public class JSONObject {
 	 * @return {@code 0} when not found, Long when found.
 	 */
 	public long getLong(String key) {
-		if (key == null) return 0;
-		Object oValue = data.get(key);
-		if (oValue == null) return 0;
-		if (oValue instanceof Long) return (long) oValue;
-		return 0;
+		return (long) get(key, 0, Long.class);
 	};
 	
 	/**
@@ -277,10 +314,7 @@ public class JSONObject {
 	 * @return {@code false} when not a Long, {@code true} when a Long.
 	 */
 	public boolean isLong(String key) {
-		if (key == null) return false;
-		Object oValue = data.get(key);
-		if (oValue == null) return false;
-		return (oValue instanceof Long);
+		return isValue(key, Long.class);
 	};
 	
 	/**
@@ -290,11 +324,7 @@ public class JSONObject {
 	 * @return {@code 0.0} when not found, Double when found.
 	 */
 	public double getDouble(String key) {
-		if (key == null) return 0.0D;
-		Object oValue = data.get(key);
-		if (oValue == null) return 0.0D;
-		if (oValue instanceof Double) return (double) oValue;
-		return 0.0D;
+		return (double) get(key, 0.0D, Double.class);
 	};
 	
 	/**
@@ -304,10 +334,7 @@ public class JSONObject {
 	 * @return {@code false} when not a Double, {@code true} when a Double.
 	 */
 	public boolean isDouble(String key) {
-		if (key == null) return false;
-		Object oValue = data.get(key);
-		if (oValue == null) return false;
-		return (oValue instanceof Double);
+		return isValue(key, Double.class);
 	};
 	
 	/**
@@ -317,11 +344,7 @@ public class JSONObject {
 	 * @return {@code 0.0} when not found, Float when found.
 	 */
 	public float getFloat(String key) {
-		if (key == null) return 0.0F;
-		Object oValue = data.get(key);
-		if (oValue == null) return 0.0F;
-		if (oValue instanceof Float) return (float) oValue;
-		return 0.0F;
+		return (float) get(key, 0.0F, Float.class);
 	};
 	
 	/**
@@ -331,10 +354,7 @@ public class JSONObject {
 	 * @return {@code false} when not a Float, {@code true} when a Float.
 	 */
 	public boolean isFloat(String key) {
-		if (key == null) return false;
-		Object oValue = data.get(key);
-		if (oValue == null) return false;
-		return (oValue instanceof Float);
+		return isValue(key, Float.class);
 	};
 	
 	/**
@@ -344,11 +364,7 @@ public class JSONObject {
 	 * @return {@code false} when not found, Boolean when found.
 	 */
 	public boolean getBoolean(String key) {
-		if (key == null) return false;
-		Object oValue = data.get(key);
-		if (oValue == null) return false;
-		if (oValue instanceof Boolean) return (boolean) oValue;
-		return false;
+		return (boolean) get(key, false, Boolean.class);
 	};
 	
 	/**
@@ -358,10 +374,7 @@ public class JSONObject {
 	 * @return {@code false} when not a Boolean, {@code true} when a Boolean.
 	 */
 	public boolean isBoolean(String key) {
-		if (key == null) return false;
-		Object oValue = data.get(key);
-		if (oValue == null) return false;
-		return (oValue instanceof Boolean);
+		return isValue(key, Boolean.class);
 	};
 		
 	/**
@@ -371,11 +384,7 @@ public class JSONObject {
 	 * @return {@code null} when not found, JSONObject when found.
 	 */
 	public JSONObject getJSONObject(String key) {
-		if (key == null) return null;
-		Object oValue = data.get(key);
-		if (oValue == null) return null;
-		if (oValue instanceof JSONObject) return (JSONObject) oValue;
-		return null;
+		return (JSONObject) get(key, null, JSONObject.class);
 	};
 	
 	/**
@@ -385,10 +394,7 @@ public class JSONObject {
 	 * @return {@code false} when not a JSONObject, {@code true} when a JSONObject.
 	 */
 	public boolean isJSONObject(String key) {
-		if (key == null) return false;
-		Object oValue = data.get(key);
-		if (oValue == null) return false;
-		return (oValue instanceof JSONObject);
+		return isValue(key, JSONObject.class);
 	};
 	
 	/**
@@ -398,11 +404,7 @@ public class JSONObject {
 	 * @return {@code null} when not found, JSONArray when found.
 	 */
 	public JSONArray getJSONArray(String key) {
-		if (key == null) return null;
-		Object oValue = data.get(key);
-		if (oValue == null) return null;
-		if (oValue instanceof JSONArray) return (JSONArray) oValue;
-		return null;
+		return (JSONArray) get(key, null, JSONArray.class);
 	};
 	
 	/**
@@ -412,10 +414,7 @@ public class JSONObject {
 	 * @return {@code false} when not a JSONArray, {@code true} when a JSONArray.
 	 */
 	public boolean isJSONArray(String key) {
-		if (key == null) return false;
-		Object oValue = data.get(key);
-		if (oValue == null) return false;
-		return (oValue instanceof JSONArray);
+		return isValue(key, JSONArray.class);
 	};
 	
 };

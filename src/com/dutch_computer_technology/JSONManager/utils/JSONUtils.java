@@ -13,7 +13,7 @@ public class JSONUtils {
 	 * @return Version of the JSONManager
 	 */
 	public static String version() {
-		return "1.0.9";
+		return "1.1.0";
 	};
 	
 	/**
@@ -90,18 +90,18 @@ public class JSONUtils {
 		str = str.replace("\f", "");
 		str = str.replace("\r", "");
 		str = str.replace("\t", "");
-		String strOut = "";
+		StringBuilder strOut = new StringBuilder();
 		boolean open = false;
 		for (int i = 0; i < str.length(); i++) {
 			char chr = str.charAt(i);
 			if (chr == '"') open = !open;
 			if (open) {
-				strOut += chr;
+				strOut.append(chr);
 			} else if (chr != ' ') {
-				strOut += chr;
+				strOut.append(chr);
 			};
 		};
-		return strOut;
+		return strOut.toString();
 	};
 	
 	/**
