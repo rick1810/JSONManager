@@ -67,68 +67,103 @@ public class JSONObject {
 	 * @return Returns a stringified JSON String.
 	 */
 	public String stringify() {
-		return toString();
+		return stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
 	};
 	
 	/**
 	 * Create a stringified JSON String.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @param tabs To use tabs.
+	 * @return Returns a stringified JSON String.
+	 */
+	public String stringify(boolean suffix, boolean tabs) {
+		return stringify(suffix, tabs, 0);
+	};
+	
+	/**
+	 * Create a stringified JSON String.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @param tabs To use tabs.
+	 * @param myTabs The ammount of tabs, Should be 0.
+	 * @return Returns a stringified JSON String.
+	 */
+	public String stringify(boolean suffix, boolean tabs, int myTabs) {
+		
+		if (data.isEmpty()) return "{}";
+		
+		StringBuilder str = new StringBuilder("{");
+		myTabs++;
+		
+		Object[] keys = data.keySet().toArray();
+		for (int i = 0; i < keys.length; i++) {
+			
+			if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
+			
+			str.append("\"").append((String) keys[i]).append("\":");
+			
+			Object oValue = data.get(keys[i]);
+			str.append(JSONStringify.Stringify(oValue, suffix, tabs, myTabs));
+			
+			if (i < data.size()-1) str.append(",");
+			
+		};
+		
+		myTabs--;
+		if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
+		return str.append("}").toString();
+		
+	};
+	
+	/**
+	 * Create a stringified JSON String,<br>
+	 * ignores beautify rules.
 	 * 
 	 * @return Returns a stringified JSON String.
 	 */
 	@Override
 	public String toString() {
 		
-		if (data.isEmpty()) return "{}";
-		
-		StringBuilder str = new StringBuilder("{");
-		int tabs = JSONUtils.beautifyTab();
-		JSONUtils.currentTabs += tabs;
-		
-		Object[] keys = data.keySet().toArray();
-		for (int i = 0; i < keys.length; i++) {
-			
-			if (tabs > 0) str.append("\n").append(JSONUtils.beautifyTabs(JSONUtils.currentTabs));
-			
-			str.append("\"").append((String) keys[i]).append("\":");
-			
-			Object oValue = data.get(keys[i]);
-			str.append(JSONStringify.Stringify(oValue));
-			
-			if (i < data.size()-1) str.append(",");
-			
-		};
-		
-		JSONUtils.currentTabs -= tabs;
-		if (tabs > 0) str.append("\n").append(JSONUtils.beautifyTabs(JSONUtils.currentTabs));
-		return str.append("}").toString();
+		return toString(JSONUtils.suffix());
 		
 	};
 	
 	/**
-	 * Create a byte array from JSON.<br>
-	 * ignores beautify rules
+	 * Create a stringified JSON String,<br>
+	 * ignores beautify rules.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @return Returns a stringified JSON String.
+	 */
+	public String toString(boolean suffix) {
+		
+		return stringify(suffix, false, 0);
+		
+	};
+	
+	/**
+	 * Create a byte array from JSON,<br>
+	 * ignores beautify rules.
 	 * 
 	 * @return Returns a stringified JSON byte array.
 	 */
 	public byte[] toBytes() {
 		
-		if (data.isEmpty()) return "{}".getBytes();
+		return toString(JSONUtils.suffix()).getBytes();
 		
-		StringBuilder str = new StringBuilder("{");
+	};
+	
+	/**
+	 * Create a byte array from JSON,<br>
+	 * ignores beautify rules.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @return Returns a stringified JSON byte array.
+	 */
+	public byte[] toBytes(boolean suffix) {
 		
-		Object[] keys = data.keySet().toArray();
-		for (int i = 0; i < keys.length; i++) {
-			
-			str.append("\"").append((String) keys[i]).append("\":");
-			
-			Object oValue = data.get(keys[i]);
-			str.append(JSONStringify.Stringify(oValue));
-			
-			if (i < data.size()-1) str.append(",");
-			
-		};
-		
-		return str.append("}").toString().getBytes();
+		return toString(suffix).getBytes();
 		
 	};
 	
@@ -183,7 +218,7 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Add a key with value to the JSONObject,
+	 * Add a key with value to the JSONObject,<br>
 	 * when this key doesn't exist.
 	 * 
 	 * @param key key to be added.

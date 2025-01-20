@@ -3,9 +3,7 @@ package com.dutch_computer_technology.JSONManager.utils;
 public class JSONUtils {
 	
 	private static boolean suffix = false;
-	private static int tab = 0;
-	
-	public static int currentTabs = 0;
+	private static boolean tabs = false;
 	
 	/**
 	 * Returns the current version of the JSONManager
@@ -13,11 +11,11 @@ public class JSONUtils {
 	 * @return Version of the JSONManager
 	 */
 	public static String version() {
-		return "1.1.0";
+		return "1.1.1";
 	};
 	
 	/**
-	 * Add suffix's behind Value's when Stringified
+	 * Add suffix's behind Value's when stringified
 	 * 
 	 * @param suffix {@code true}/{@code false}
 	 */
@@ -28,7 +26,7 @@ public class JSONUtils {
 	};
 	
 	/**
-	 * Get if suffix's are added behind Value's when Stringified
+	 * Get if suffix's are added behind Value's when stringified
 	 * 
 	 * @return {@code true} When adding suffix's, {@code false} When none are added.
 	 */
@@ -39,33 +37,32 @@ public class JSONUtils {
 	};
 	
 	/**
-	 * Set how many Tab's per JSONObject when Stringified
+	 * Add tabs when stringified
 	 * 
-	 * @param tab Tabs per JSONObject, >=0
+	 * @param tabs {@code true}/{@code false}
 	 */
-	public static void beautifyTab(int tab) {
+	public static void beautifyTabs(boolean tabs) {
 		
-		if (tab < 0) tab = 0;
-		JSONUtils.tab = tab;
+		JSONUtils.tabs = tabs;
 		
 	};
 	
 	/**
-	 * Get how many Tab's per JSONObject when Stringified
+	 * Get if tabs are added when stringified
 	 * 
-	 * @return Tab's per JSONObject
+	 * @return {@code true} When tabs are added, {@code false} When tabs will not be added.
 	 */
-	public static int beautifyTab() {
+	public static boolean beautifyTabs() {
 		
-		return tab;
+		return tabs;
 		
 	};
 	
 	/**
-	 * Returns Tab's
+	 * Returns ammount of tabs
 	 * 
-	 * @param tabs Ammount of Tab's
-	 * @return Tab's
+	 * @param tabs The ammount needed.
+	 * @return The ammount of tabs needed.
 	 */
 	public static String beautifyTabs(int tabs) {
 		

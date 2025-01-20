@@ -62,65 +62,104 @@ public class JSONArray {
 	
 	/**
 	 * Create a stringified JSON String.
+	 * 
 	 * @return Returns a stringified JSON String.
 	 */
 	public String stringify() {
-		return toString();
+		return stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
 	};
 	
 	/**
 	 * Create a stringified JSON String.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @param tabs To use tabs.
+	 * @return Returns a stringified JSON String.
+	 */
+	public String stringify(boolean suffix, boolean tabs) {
+		return stringify(suffix, tabs, 0);
+	};
+	
+	/**
+	 * Create a stringified JSON String.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @param tabs To use tabs.
+	 * @param myTabs The ammount of tabs, Should be 0.
+	 * @return Returns a stringified JSON String.
+	 */
+	public String stringify(boolean suffix, boolean tabs, int myTabs) {
+		
+		if (data.isEmpty()) return "[]";
+		
+		StringBuilder str = new StringBuilder("[");
+		myTabs++;
+		
+		for (int i = 0; i < data.size(); i++) {
+			
+			if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
+			
+			Object oValue = data.get(i);
+			str.append(JSONStringify.Stringify(oValue, suffix, tabs, myTabs));
+			
+			if (i < data.size()-1) str.append(",");
+			
+		};
+		
+		myTabs--;
+		if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
+		return str.append("]").toString();
+		
+	};
+	
+	/**
+	 * Create a stringified JSON String,<br>
+	 * ignores beautify rules.
 	 * 
 	 * @return Returns a stringified JSON String.
 	 */
 	@Override
 	public String toString() {
 		
-		if (data.isEmpty()) return "[]";
-		
-		StringBuilder str = new StringBuilder("[");
-		int tabs = JSONUtils.beautifyTab();
-		JSONUtils.currentTabs += tabs;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			if (tabs > 0) str.append("\n").append(JSONUtils.beautifyTabs(JSONUtils.currentTabs));
-			
-			Object oValue = data.get(i);
-			str.append(JSONStringify.Stringify(oValue));
-			
-			if (i < data.size()-1) str.append(",");
-			
-		};
-		
-		JSONUtils.currentTabs -= tabs;
-		if (tabs > 0) str.append("\n").append(JSONUtils.beautifyTabs(JSONUtils.currentTabs));
-		return str.append("]").toString();
+		return toString(JSONUtils.suffix());
 		
 	};
 	
 	/**
-	 * Create a byte array from JSON.<br>
-	 * ignores beautify rules
+	 * Create a stringified JSON String,<br>
+	 * ignores beautify rules.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @return Returns a stringified JSON String.
+	 */
+	public String toString(boolean suffix) {
+		
+		return stringify(suffix, false, 0);
+		
+	};
+	
+	/**
+	 * Create a byte array from JSON,<br>
+	 * ignores beautify rules.
 	 * 
 	 * @return Returns a stringified JSON byte array.
 	 */
 	public byte[] toBytes() {
 		
-		if (data.isEmpty()) return "[]".getBytes();
+		return toString(JSONUtils.suffix()).getBytes();
 		
-		StringBuilder str = new StringBuilder("[");
+	};
+	
+	/**
+	 * Create a byte array from JSON,<br>
+	 * ignores beautify rules.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @return Returns a stringified JSON byte array.
+	 */
+	public byte[] toBytes(boolean suffix) {
 		
-		for (int i = 0; i < data.size(); i++) {
-			
-			Object oValue = data.get(i);
-			str.append(JSONStringify.Stringify(oValue));
-			
-			if (i < data.size()-1) str.append(",");
-			
-		};
-		
-		return str.append("]").toString().getBytes();
+		return toString(suffix).getBytes();
 		
 	};
 	
@@ -154,6 +193,36 @@ public class JSONArray {
 	 * @param i Position of Object, must be greater or equal to 0.
 	 */
 	public void add(Object value, int i) {
+		if (i > -1) {
+			if (i > data.size()) i = data.size();
+			data.add(i, value);
+			return;
+		};
+		data.add(value);
+	};
+	
+	/**
+	 * Add a Object to the JSONArray,<br>
+	 * when the Object doesn't exist.
+	 * 
+	 * @param value Object to be added.
+	 */
+	public void addWhenAbsent(Object value) {
+		addWhenAbsent(value, -1);
+	};
+	
+	/**
+	 * Add a Object to the JSONArray,<br>
+	 * at the given position, when the Object doesn't exist.<br>
+	 * <br>
+	 * When the given postion is less then 0,<br>
+	 * the Object will be added at the end of the JSONArray.
+	 * 
+	 * @param value Object to be added.
+	 * @param i Position of Object, must be greater or equal to 0.
+	 */
+	public void addWhenAbsent(Object value, int i) {
+		if (data.contains(value)) return;
 		if (i > -1) {
 			if (i > data.size()) i = data.size();
 			data.add(i, value);

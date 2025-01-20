@@ -1,5 +1,6 @@
 package com.dutch_computer_technology.JSONManager.utils;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -183,7 +184,26 @@ public class JSONParser {
 		};
 		
 		//JSONObject
-		if (str.startsWith("{") && str.endsWith("}")) return new JSONObject(str);
+		if (str.startsWith("{") && str.endsWith("}")) {
+			
+			JSONObject json = new JSONObject(str);
+			if (!json.isString("__class")) return json; //Check if __class exists & is a string.
+			
+			//Try to create a custom class.
+			Class<?> cls = null;
+			try {
+				cls = Class.forName(json.getString("__class")); //Get the class.
+			} catch(Exception ignore) {};
+			if (cls == null) return json; //No class, return json.
+			
+			try {
+				Constructor<?> con = cls.getConstructor(JSONObject.class); //Try constructor of class.
+				return con.newInstance(json); //New instance.
+			} catch(Exception ignore) {};
+			
+			return json; //No constructor, return json.
+			
+		};
 		
 		//Array
 		if (str.startsWith("[") && str.endsWith("]")) return new JSONArray(str);

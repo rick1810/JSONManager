@@ -7,7 +7,6 @@ import com.dutch_computer_technology.JSONManager.data.JSONObject;
 
 public class JSONStringify {
 	
-	//JSONObject
 	/**
 	 * Returns a stringified Value from a Object
 	 * 
@@ -16,6 +15,21 @@ public class JSONStringify {
 	 */
 	public static String Stringify(Object obj) {
 		
+		return Stringify(obj, JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
+		
+	};
+	
+	/**
+	 * Returns a stringified Value from a Object
+	 * 
+	 * @param obj To be stringified.
+	 * @param suffix To use suffixes.
+	 * @param tabs To use tabs.
+	 * @param myTabs The ammount of tabs.
+	 * @return The stringified Value
+	 */
+	public static String Stringify(Object obj, boolean suffix, boolean tabs, int myTabs) {
+		
 		//Null
 		if (obj == null) return "null";
 		
@@ -23,17 +37,15 @@ public class JSONStringify {
 		if (obj instanceof String) return new StringBuilder("\"").append(JSONUtils.escape((String) obj)).append("\"").toString();
 		
 		//Object
-		if (obj instanceof JSONObject) return ((JSONObject) obj).stringify();
+		if (obj instanceof JSONObject) return ((JSONObject) obj).stringify(suffix, tabs, myTabs);
 		
 		//Array
-		if (obj instanceof JSONArray) return ((JSONArray) obj).stringify();
+		if (obj instanceof JSONArray) return ((JSONArray) obj).stringify(suffix, tabs, myTabs);
 		
 		//Boolean
 		if (obj instanceof Boolean) return obj.toString();
 		
 		//Numbers
-			
-			boolean suffix = JSONUtils.suffix();
 			
 			//Integer
 			if (obj instanceof Integer) return new StringBuilder(Integer.toString((int) obj)).append(suffix ? "I" : "").toString();
@@ -65,7 +77,11 @@ public class JSONStringify {
 			
 			Method method = cls.getMethod("toJSON");
 			Object ret = method.invoke(obj);
-			if (ret instanceof JSONObject) return ((JSONObject) ret).stringify();
+			if (ret instanceof JSONObject) {
+				JSONObject json = (JSONObject) ret;
+				json.put("__class", cls.getName());
+				return ((JSONObject) ret).stringify();
+			};
 			
 		} catch (NoSuchMethodException ignore) {
 		} catch (Exception e) {
