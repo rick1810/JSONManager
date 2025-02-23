@@ -1,6 +1,8 @@
 package com.dutch_computer_technology.JSONManager.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,7 +19,9 @@ public class JSONObject {
 	 * Create a empty JSONObject.
 	 */
 	public JSONObject() {
+		
 		data = new HashMap<String, Object>();
+		
 	};
 	
 	/**
@@ -27,8 +31,10 @@ public class JSONObject {
 	 * @throws JSONParseException
 	 */
 	public JSONObject(byte[] bytes) throws JSONParseException {
+		
 		data = new HashMap<String, Object>();
 		parse(new String(bytes));
+		
 	};
 	
 	/**
@@ -38,8 +44,10 @@ public class JSONObject {
 	 * @throws JSONParseException
 	 */
 	public JSONObject(String str) throws JSONParseException {
+		
 		data = new HashMap<String, Object>();
 		parse(str);
+		
 	};
 	
 	/**
@@ -48,7 +56,9 @@ public class JSONObject {
 	 * @param json JSONObject to be copied.
 	 */
 	public JSONObject(JSONObject json) {
+		
 		data = new HashMap<String, Object>(json.data);
+		
 	};
 	
 	/**
@@ -58,7 +68,9 @@ public class JSONObject {
 	 * @throws JSONParseException
 	 */
 	public void parse(String str) throws JSONParseException {
+		
 		new JSONParser(data, str);
+		
 	};
 	
 	/**
@@ -67,7 +79,9 @@ public class JSONObject {
 	 * @return Returns a stringified JSON String.
 	 */
 	public String stringify() {
+		
 		return stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
+		
 	};
 	
 	/**
@@ -78,7 +92,9 @@ public class JSONObject {
 	 * @return Returns a stringified JSON String.
 	 */
 	public String stringify(boolean suffix, boolean tabs) {
+		
 		return stringify(suffix, tabs, 0);
+		
 	};
 	
 	/**
@@ -91,28 +107,7 @@ public class JSONObject {
 	 */
 	public String stringify(boolean suffix, boolean tabs, int myTabs) {
 		
-		if (data.isEmpty()) return "{}";
-		
-		StringBuilder str = new StringBuilder("{");
-		myTabs++;
-		
-		Object[] keys = data.keySet().toArray();
-		for (int i = 0; i < keys.length; i++) {
-			
-			if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
-			
-			str.append("\"").append((String) keys[i]).append("\":");
-			
-			Object oValue = data.get(keys[i]);
-			str.append(JSONStringify.Stringify(oValue, suffix, tabs, myTabs));
-			
-			if (i < data.size()-1) str.append(",");
-			
-		};
-		
-		myTabs--;
-		if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
-		return str.append("}").toString();
+		return JSONStringify.Stringify(data, suffix, tabs, myTabs);
 		
 	};
 	
@@ -138,7 +133,20 @@ public class JSONObject {
 	 */
 	public String toString(boolean suffix) {
 		
-		return stringify(suffix, false, 0);
+		return toString(suffix, false);
+		
+	};
+	
+	/**
+	 * Create a stringified JSON String.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @param tabs To use tabs.
+	 * @return Returns a stringified JSON String.
+	 */
+	public String toString(boolean suffix, boolean tabs) {
+		
+		return stringify(suffix, tabs);
 		
 	};
 	
@@ -150,7 +158,7 @@ public class JSONObject {
 	 */
 	public byte[] toBytes() {
 		
-		return toString(JSONUtils.suffix()).getBytes();
+		return toBytes(JSONUtils.suffix(), false);
 		
 	};
 	
@@ -163,7 +171,20 @@ public class JSONObject {
 	 */
 	public byte[] toBytes(boolean suffix) {
 		
-		return toString(suffix).getBytes();
+		return toBytes(suffix, false);
+		
+	};
+	
+	/**
+	 * Create a byte array from JSON.
+	 * 
+	 * @param suffix To use suffixes.
+	 * @param tabs To use tabs.
+	 * @return Returns a stringified JSON byte array.
+	 */
+	public byte[] toBytes(boolean suffix, boolean tabs) {
+		
+		return stringify(suffix, tabs).getBytes();
 		
 	};
 	
@@ -174,7 +195,7 @@ public class JSONObject {
 	 * @return {@code true} if key found, {@code false} if nothing found.
 	 */
 	public boolean hasKey(String key) {
-		return data.containsKey(key);
+		return contains(key);
 	};
 	
 	/**
@@ -184,6 +205,7 @@ public class JSONObject {
 	 * @return {@code true} if key found, {@code false} if nothing found.
 	 */
 	public boolean contains(String key) {
+		if (key == null) return false;
 		return data.containsKey(key);
 	};
 	
@@ -236,6 +258,16 @@ public class JSONObject {
 	 * @param key key to be removed.
 	 */
 	public void delete(String key) {
+		remove(key);
+	};
+	
+	/**
+	 * Remove a key with it's value from the JSONObject.
+	 * 
+	 * @param key key to be removed.
+	 */
+	public void remove(String key) {
+		if (key == null) return;
 		if (data.containsKey(key)) data.remove(key);
 	};
 	
@@ -450,6 +482,43 @@ public class JSONObject {
 	 */
 	public boolean isJSONArray(String key) {
 		return isValue(key, JSONArray.class);
+	};
+	
+	/**
+	 * Get List<?> from key.
+	 * 
+	 * @param key key.
+	 * @return {@code null} when not found, List<?> when found.
+	 */
+	public List<?> getList(String key) {
+		return getList(key, null);
+	};
+	
+	/**
+	 * Get List<{@code cls}> from key.
+	 * 
+	 * @param key key.
+	 * @param cls Class to check for.
+	 * @return {@code null} when not found, List<{@code cls}> when found.
+	 */
+	public List<?> getList(String key, Class<?> cls) {
+		List<?> list = (List<?>) get(key, null, List.class);
+		if (cls == null || list == null) return list;
+		List<Object> clsList = new ArrayList<>();
+		for (Object obj : list) {
+			if (cls.isInstance(obj)) clsList.add(obj);
+		};
+		return clsList;
+	};
+	
+	/**
+	 * Check if value from key is a List.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a List, {@code true} when a List.
+	 */
+	public boolean isList(String key) {
+		return isValue(key, List.class);
 	};
 	
 };

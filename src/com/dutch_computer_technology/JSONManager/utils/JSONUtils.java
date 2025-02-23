@@ -11,7 +11,7 @@ public class JSONUtils {
 	 * @return Version of the JSONManager
 	 */
 	public static String version() {
-		return "1.1.1";
+		return "2.0.0";
 	};
 	
 	/**

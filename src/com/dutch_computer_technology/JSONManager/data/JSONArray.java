@@ -16,7 +16,9 @@ public class JSONArray {
 	 * Create a empty JSONArray.
 	 */
 	public JSONArray() {
+		
 		data = new ArrayList<Object>();
+		
 	};
 	
 	/**
@@ -26,8 +28,10 @@ public class JSONArray {
 	 * @throws JSONParseException
 	 */
 	public JSONArray(byte[] bytes) throws JSONParseException {
+		
 		data = new ArrayList<Object>();
 		parse(new String(bytes));
+		
 	};
 	
 	/**
@@ -37,8 +41,10 @@ public class JSONArray {
 	 * @throws JSONParseException
 	 */
 	public JSONArray(String str) throws JSONParseException {
+		
 		data = new ArrayList<Object>();
 		parse(str);
+		
 	};
 	
 	/**
@@ -47,7 +53,9 @@ public class JSONArray {
 	 * @param json JSONArray to be copied.
 	 */
 	public JSONArray(JSONArray json) {
+		
 		data = new ArrayList<Object>(json.data);
+		
 	};
 	
 	/**
@@ -57,7 +65,9 @@ public class JSONArray {
 	 * @throws JSONParseException
 	 */
 	public void parse(String str) throws JSONParseException {
+		
 		new JSONParser(data, str);
+		
 	};
 	
 	/**
@@ -66,7 +76,9 @@ public class JSONArray {
 	 * @return Returns a stringified JSON String.
 	 */
 	public String stringify() {
+		
 		return stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
+		
 	};
 	
 	/**
@@ -77,7 +89,9 @@ public class JSONArray {
 	 * @return Returns a stringified JSON String.
 	 */
 	public String stringify(boolean suffix, boolean tabs) {
+		
 		return stringify(suffix, tabs, 0);
+		
 	};
 	
 	/**
@@ -90,25 +104,7 @@ public class JSONArray {
 	 */
 	public String stringify(boolean suffix, boolean tabs, int myTabs) {
 		
-		if (data.isEmpty()) return "[]";
-		
-		StringBuilder str = new StringBuilder("[");
-		myTabs++;
-		
-		for (int i = 0; i < data.size(); i++) {
-			
-			if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
-			
-			Object oValue = data.get(i);
-			str.append(JSONStringify.Stringify(oValue, suffix, tabs, myTabs));
-			
-			if (i < data.size()-1) str.append(",");
-			
-		};
-		
-		myTabs--;
-		if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
-		return str.append("]").toString();
+		return JSONStringify.Stringify(data, suffix, tabs, myTabs);
 		
 	};
 	
@@ -134,7 +130,7 @@ public class JSONArray {
 	 */
 	public String toString(boolean suffix) {
 		
-		return stringify(suffix, false, 0);
+		return stringify(suffix, false);
 		
 	};
 	
@@ -612,6 +608,46 @@ public class JSONArray {
 	 */
 	public boolean isJSONArray(int i) {
 		return isValue(i, JSONArray.class);
+	};
+	
+	/**
+	 * Get List at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code null} when out of bounds or when not a List<?>, List<?> when found.
+	 */
+	public List<?> getList(int i) {
+		return getList(i, null);
+	};
+	
+	/**
+	 * Get List at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param cls Class to check for.
+	 * @return {@code null} when out of bounds or when not a List<{@code cls}>, List<{@code cls}> when found.
+	 */
+	public List<?> getList(int i, Class<?> cls) {
+		List<?> list = (List<?>) get(i, null, List.class);
+		if (cls == null || list == null) return list;
+		List<Object> clsList = new ArrayList<>();
+		for (Object obj : list) {
+			if (cls.isInstance(obj)) clsList.add(obj);
+		};
+		return clsList;
+	};
+	
+	/**
+	 * Check if Object at given position is a List,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when out of bounds or not a List, {@code true} when a List.
+	 */
+	public boolean isList(int i) {
+		return isValue(i, List.class);
 	};
 	
 };

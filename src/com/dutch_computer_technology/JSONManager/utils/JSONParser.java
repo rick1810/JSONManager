@@ -45,9 +45,9 @@ public class JSONParser {
 			};
 			
 			if (c == ']' || c == '}') {
-				if (open.length() == 0) throw new JSONParseException("Illegal bracket at " + (i+2));
+				if (open.length() == 0) throw new JSONParseException("Illegal bracket at " + i);
 				char b = open.charAt(open.length()-1);
-				if (!((c == ']' && b == '[') || (c == '}' && b == '{'))) throw new JSONParseException("Illegal bracket at " + (i+2));
+				if (!((c == ']' && b == '[') || (c == '}' && b == '{'))) throw new JSONParseException("Illegal bracket at " + i);
 				open.setLength(open.length()-1);
 			};
 			
@@ -77,6 +77,7 @@ public class JSONParser {
 		};
 		
 		o = 1; //Offset for { of init
+		List<Loader> loaders = new ArrayList<Loader>();
 		for (String obj : objs) {
 			
 			int closeKey = obj.indexOf("\"", 1);
@@ -90,7 +91,28 @@ public class JSONParser {
 			
 			String oValue = obj.substring(separatorIndex+1, obj.length());
 			
-			data.put(key, parseValue(oValue));
+			Loader loader = new Loader(key, oValue);
+			loaders.add(loader);
+			loader.start();
+			
+		};
+		
+		while (true) { //In order
+			
+			boolean allReady = true;
+			for (Loader loader : loaders) {
+				
+				if (loader.getErr() != null) throw loader.getErr();
+				if (!loader.isReady()) allReady = false;
+				
+			};
+			if (allReady) break;
+			
+		};
+		
+		for (Loader loader : loaders) {
+			
+			data.put(loader.getKey(), loader.getValue());
 			
 		};
 		
@@ -160,9 +182,104 @@ public class JSONParser {
 			
 		};
 		
+		List<Loader> loaders = new ArrayList<Loader>();
 		for (String oValue : objs) {
 			
-			data.add(parseValue(oValue));
+			Loader loader = new Loader(oValue);
+			loaders.add(loader);
+			loader.start();
+			
+		};
+		
+		while (true) { //In order
+			
+			boolean allReady = true;
+			for (Loader loader : loaders) {
+				
+				if (loader.getErr() != null) throw loader.getErr();
+				if (!loader.isReady()) allReady = false;
+				
+			};
+			if (allReady) break;
+			
+		};
+		
+		for (Loader loader : loaders) {
+			
+			data.add(loader.getValue());
+			
+		};
+		
+	};
+	
+	private class Loader extends Thread {
+		
+		private String key;
+		private String value;
+		
+		private JSONParseException e;
+		private Object obj;
+		private boolean ready;
+		
+		public Loader(String key, String value) {
+			
+			this.key = key;
+			this.value = value;
+			
+			this.e = null;
+			this.obj = null;
+			this.ready = false;
+			
+		};
+		
+		public Loader(String value) {
+			
+			this.key = null;
+			this.value = value;
+			
+			this.e = null;
+			this.obj = null;
+			this.ready = false;
+			
+		};
+		
+		public String getKey() {
+			
+			return (String) this.key;
+			
+		};
+		
+		public Object getValue() {
+			
+			return this.obj;
+			
+		};
+		
+		public JSONParseException getErr() {
+			
+			return this.e;
+			
+		};
+		
+		public boolean isReady() {
+			
+			return this.ready;
+			
+		};
+		
+		@Override
+		public void run() {
+			
+			try {
+				
+				this.obj = parseValue(this.value);
+				
+			} catch(JSONParseException e) {
+				
+				this.e = e;
+				
+			};
+			this.ready = true;
 			
 		};
 		
@@ -189,13 +306,24 @@ public class JSONParser {
 			JSONObject json = new JSONObject(str);
 			if (!json.isString("__class")) return json; //Check if __class exists & is a string.
 			
-			//Try to create a custom class.
+			//Get class.
 			Class<?> cls = null;
 			try {
 				cls = Class.forName(json.getString("__class")); //Get the class.
 			} catch(Exception ignore) {};
 			if (cls == null) return json; //No class, return json.
 			
+			//Try to create a List
+			if (cls.equals(List.class)) {
+				
+				if (!json.isJSONArray("values")) return json;
+				
+				JSONArray arr = json.getJSONArray("values");
+				return arr.getObjects();
+				
+			};
+			
+			//Try to create a custom class
 			try {
 				Constructor<?> con = cls.getConstructor(JSONObject.class); //Try constructor of class.
 				return con.newInstance(json); //New instance.
