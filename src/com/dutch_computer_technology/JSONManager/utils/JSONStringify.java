@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.dutch_computer_technology.JSONManager.data.JSONArray;
 import com.dutch_computer_technology.JSONManager.data.JSONObject;
-import com.dutch_computer_technology.JSONManager.exception.JSONParseException;
 
 public class JSONStringify {
 	
@@ -18,7 +17,7 @@ public class JSONStringify {
 	 * @param suffix To use suffixes.
 	 * @param tabs To use tabs.
 	 * @param myTabs The ammount of tabs.
-	 * @throws JSONParseException
+	 * @return The stringified JSONObject
 	 */
 	public static String Stringify(Map<String, Object> data, boolean suffix, boolean tabs, int myTabs) {
 		
@@ -78,7 +77,7 @@ public class JSONStringify {
 	 * @param suffix To use suffixes.
 	 * @param tabs To use tabs.
 	 * @param myTabs The ammount of tabs.
-	 * @throws JSONParseException
+	 * @return The stringified JSONArray
 	 */
 	public static String Stringify(List<Object> data, boolean suffix, boolean tabs, int myTabs) {
 		

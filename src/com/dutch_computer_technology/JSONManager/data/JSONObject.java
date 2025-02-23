@@ -485,21 +485,21 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Get List<?> from key.
+	 * Get List&lt;?&gt; from key.
 	 * 
 	 * @param key key.
-	 * @return {@code null} when not found, List<?> when found.
+	 * @return {@code null} when not found, List&lt;?&gt; when found.
 	 */
 	public List<?> getList(String key) {
 		return getList(key, null);
 	};
 	
 	/**
-	 * Get List<{@code cls}> from key.
+	 * Get List&lt;{@code cls}&gt; from key.
 	 * 
 	 * @param key key.
 	 * @param cls Class to check for.
-	 * @return {@code null} when not found, List<{@code cls}> when found.
+	 * @return {@code null} when not found, List&lt;{@code cls}&gt; when found.
 	 */
 	public List<?> getList(String key, Class<?> cls) {
 		List<?> list = (List<?>) get(key, null, List.class);

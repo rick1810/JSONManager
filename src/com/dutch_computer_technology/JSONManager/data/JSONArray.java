@@ -611,23 +611,23 @@ public class JSONArray {
 	};
 	
 	/**
-	 * Get List at given position,<br>
+	 * Get List&lt;?&gt; at given position,<br>
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
-	 * @return {@code null} when out of bounds or when not a List<?>, List<?> when found.
+	 * @return {@code null} when out of bounds or when not a List&lt;?&gt;, List&lt;?&gt; when found.
 	 */
 	public List<?> getList(int i) {
 		return getList(i, null);
 	};
 	
 	/**
-	 * Get List at given position,<br>
+	 * Get List&lt;cls&gt; at given position,<br>
 	 * must be inbound 0-size.
 	 * 
 	 * @param i Postion of Object.
 	 * @param cls Class to check for.
-	 * @return {@code null} when out of bounds or when not a List<{@code cls}>, List<{@code cls}> when found.
+	 * @return {@code null} when out of bounds or when not a List&lt;{@code cls}&gt;, List&lt;{@code cls}&gt; when found.
 	 */
 	public List<?> getList(int i, Class<?> cls) {
 		List<?> list = (List<?>) get(i, null, List.class);
