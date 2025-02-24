@@ -21,7 +21,7 @@ With support for parsing custom classes<br/>
 
 ## Jar download
 
-You can download any stable or newest version in [/releases](/releases)<br/>
+You can download any stable or newest version in [/releases](https://github.com/rick1810/JSONManager/releases)<br/>
 <br/>
 <br/>
 
