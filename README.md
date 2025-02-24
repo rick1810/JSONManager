@@ -1,16 +1,95 @@
 # JSONManager
 
-JSONManager is a simple Java based JSON-Manager.<br/>
+JSONManager is a Java based JSON Manager.<br/>
 <br/>
-It allows a JSON String to be parsed / stringified.<br/>
+With support for parsing custom classes<br/>
+& Threaded parsing & stringifying.<br/>
+<br/>
+<br/>
+
+## Maven
+
+> [!NOTE]
+> Replace `version` with the latest version
+```xml
+<dependency>
+  <groupId>com.dutch_computer_technology</groupId>
+  <artifactId>JSONManager</artifactId>
+  <version>x.x.x</version>
+</dependency>
+```
 
 ## Jar download
 
-You can download any stable or newest version in [/releases](https://github.com/rick1810/JSONManager/releases)
+You can download any stable or newest version in [/releases](/releases)<br/>
+<br/>
+<br/>
 
-## Usage
+## Settings
 
+### Syntax
+
+Add suffix's behind Value's when stringified,<br/>
+Disabled by default.
+
+> [!NOTE]
+> Using `stringify(syntax)` `toString(syntax)` `toBytes(syntax)`<br/>
+> For when you don't want to use the global settings
+
+- `suffix()` : Returns true/false for global suffix
+- `suffix(true/false)` : Set global suffix to true/false
+
+### Tabs
+
+Add tabs when stringified,<br/>
+Disabled by default.
+
+> [!NOTE]
+> Using `stringify(syntax, tabs)` `toString(syntax, tabs)` `toBytes(syntax, tabs)`<br/>
+> For when you don't want to use the global settings
+
+- `beautifyTabs()` : Returns true/false for global tabs
+- `beautifyTabs(true/false)` : Set global tabs to true/false
+
+<br/>
+<br/>
+
+## Custom Classes support
+
+JSONManager can parse/stringify custom classes.
+> [!NOTE]
+> When a custom class does not have a `toJSON()`, `toString()` is used instead
+
+> [!WARNING]
+> If a `toJSON()` is present, the `__class` key is set/overwritten to the className
+
+### Convert to JSON
+
+Called when stringifying a JSONObject.
+```java
+public class Car {
+  public JSONObject toJSON() {
+    <!-- You're code here -->
+  };
+};
 ```
+
+### Convert from JSON
+
+Called when parsing a JSONObject.
+```java
+public class Car {
+  public Car(JSONObject json) {
+    <!-- You're code here -->
+  };
+};
+```
+
+<br/>
+
+## Example
+
+```java
 JSONObject jsonA = new JSONObject();
 System.out.println(jsonA.toString()); // {}
 
