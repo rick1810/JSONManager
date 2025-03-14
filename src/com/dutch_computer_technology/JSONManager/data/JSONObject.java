@@ -371,7 +371,7 @@ public class JSONObject {
 	 * @return {@code 0} when not found, Long when found.
 	 */
 	public long getLong(String key) {
-		return (long) get(key, 0, Long.class);
+		return (long) get(key, 0L, Long.class);
 	};
 	
 	/**

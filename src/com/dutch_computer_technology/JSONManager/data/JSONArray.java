@@ -233,6 +233,24 @@ public class JSONArray {
 	 * @param i Position of Object.
 	 */
 	public void delete(int i) {
+		remove(i);
+	};
+	
+	/**
+	 * Remove a Object from the JSONArray.
+	 * 
+	 * @param value Object to be removed.
+	 */
+	public void delete(Object value) {
+		remove(value);
+	};
+	
+	/**
+	 * Remove a Object from the JSONArray, at the given position.
+	 * 
+	 * @param i Position of Object.
+	 */
+	public void remove(int i) {
 		if (i < 0 || i > data.size() || data.size() == 0) return;
 		data.remove(i);
 	};
@@ -242,7 +260,7 @@ public class JSONArray {
 	 * 
 	 * @param value Object to be removed.
 	 */
-	public void delete(Object value) {
+	public void remove(Object value) {
 		data.remove(value);
 	};
 	
@@ -486,7 +504,7 @@ public class JSONArray {
 	 * @return {@code 0} when out of bounds or when not a Long, Long when found.
 	 */
 	public long getLong(int i) {
-		return (long) get(i, 0, Long.class);
+		return (long) get(i, 0L, Long.class);
 	};
 	
 	/**
