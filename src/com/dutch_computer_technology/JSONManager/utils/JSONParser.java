@@ -9,6 +9,9 @@ import com.dutch_computer_technology.JSONManager.data.JSONArray;
 import com.dutch_computer_technology.JSONManager.data.JSONObject;
 import com.dutch_computer_technology.JSONManager.exception.JSONParseException;
 
+/**
+ * Parser for JSONObject's &amp; JSONArray's
+ */
 public class JSONParser {
 	
 	//JSONObject
@@ -17,7 +20,7 @@ public class JSONParser {
 	 * 
 	 * @param data The Map to store the parsed data.
 	 * @param str String to be parsed.
-	 * @throws JSONParseException
+	 * @throws JSONParseException When parsing fails.
 	 */
 	public JSONParser(Map<String, Object> data, String str) throws JSONParseException {
 		
@@ -124,7 +127,7 @@ public class JSONParser {
 	 * 
 	 * @param data The List to store the parsed data.
 	 * @param str String to be parsed.
-	 * @throws JSONParseException
+	 * @throws JSONParseException When parsing fails.
 	 */
 	public JSONParser(List<Object> data, String str) throws JSONParseException {
 		
@@ -313,16 +316,6 @@ public class JSONParser {
 			} catch(Exception ignore) {};
 			if (cls == null) return json; //No class, return json.
 			
-			//Try to create a List
-			if (cls.equals(List.class)) {
-				
-				if (!json.isJSONArray("values")) return json;
-				
-				JSONArray arr = json.getJSONArray("values");
-				return arr.getObjects();
-				
-			};
-			
 			//Try to create a custom class
 			try {
 				Constructor<?> con = cls.getConstructor(JSONObject.class); //Try constructor of class.
@@ -351,6 +344,8 @@ public class JSONParser {
 				char suffix = str.charAt(str.length() - 1);
 				String num = str;
 				if (suffix == 'I' || suffix == 'L' || suffix == 'D' || suffix == 'F') num = str.substring(0, str.length()-1);
+				
+				if (num.equals("null")) return null;
 				
 				switch(suffix) {
 					//Integer

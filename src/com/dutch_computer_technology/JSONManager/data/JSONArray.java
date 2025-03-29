@@ -8,6 +8,9 @@ import com.dutch_computer_technology.JSONManager.utils.JSONParser;
 import com.dutch_computer_technology.JSONManager.utils.JSONStringify;
 import com.dutch_computer_technology.JSONManager.utils.JSONUtils;
 
+/**
+ * Get/Add a {@code Object} using a {@code Integer} index
+ */
 public class JSONArray {
 	
 	private List<Object> data;
@@ -25,7 +28,7 @@ public class JSONArray {
 	 * Create &amp; Parse a JSONArray from a Byte array.
 	 * 
 	 * @param bytes Byte array to be parsed.
-	 * @throws JSONParseException
+	 * @throws JSONParseException When parsing fails.
 	 */
 	public JSONArray(byte[] bytes) throws JSONParseException {
 		
@@ -38,7 +41,7 @@ public class JSONArray {
 	 * Create &amp; Parse a JSONArray from a String.
 	 * 
 	 * @param str String to be parsed.
-	 * @throws JSONParseException
+	 * @throws JSONParseException When parsing fails.
 	 */
 	public JSONArray(String str) throws JSONParseException {
 		
@@ -59,10 +62,21 @@ public class JSONArray {
 	};
 	
 	/**
+	 * Copy the JSONArray.
+	 * 
+	 * @return Returns a copy of this JSONArray.
+	 */
+	public JSONArray copy() {
+		
+		return new JSONArray(this);
+		
+	};
+	
+	/**
 	 * Parse a String to a JSONArray.
 	 * 
 	 * @param str String to be parsed.
-	 * @throws JSONParseException
+	 * @throws JSONParseException When parsing fails.
 	 */
 	public void parse(String str) throws JSONParseException {
 		
@@ -77,7 +91,7 @@ public class JSONArray {
 	 */
 	public String stringify() {
 		
-		return stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
+		return _stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
 		
 	};
 	
@@ -90,7 +104,7 @@ public class JSONArray {
 	 */
 	public String stringify(boolean suffix, boolean tabs) {
 		
-		return stringify(suffix, tabs, 0);
+		return _stringify(suffix, tabs, 0);
 		
 	};
 	
@@ -102,7 +116,7 @@ public class JSONArray {
 	 * @param myTabs The ammount of tabs, Should be 0.
 	 * @return Returns a stringified JSON String.
 	 */
-	public String stringify(boolean suffix, boolean tabs, int myTabs) {
+	public String _stringify(boolean suffix, boolean tabs, int myTabs) {
 		
 		return JSONStringify.Stringify(data, suffix, tabs, myTabs);
 		
@@ -295,11 +309,11 @@ public class JSONArray {
 	 * Create a copy List of the JSONArray Object's,
 	 * that are part of the given Class.
 	 * 
+	 * @param <T> Class to make a List of.
 	 * @param cls Class to make a List of.
 	 * @return {@code null} When cls is null, A new List of {@code cls} Object's inside of the JSONArray.
 	 */
-	@SuppressWarnings("unchecked")
-	public <T> List<T> getObjects(Class<?> cls) {
+	public <T> List<T> getObjects(Class<T> cls) {
 		
 		if (cls == null) return null;
 		
@@ -462,7 +476,18 @@ public class JSONArray {
 	public String getString(int i) {
 		return (String) get(i, null, String.class);
 	};
-		
+	
+	/**
+	 * Get String from key.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @return {@code def} when out of bounds or when not a String, String when found.
+	 */
+	public String getString(int i, String def) {
+		return (String) get(i, def, String.class);
+	};
+	
 	/**
 	 * Check if Object at given position is a String,<br>
 	 * must be inbound 0-size.
@@ -475,6 +500,48 @@ public class JSONArray {
 	};
 	
 	/**
+	 * 
+	 * Check if Object from key is a number,<br>
+	 * Integer, Long, Double, Float.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a number, {@code true} when a number.
+	 */
+	public boolean isNumber(int i) {
+		return isValue(i, Number.class);
+	};
+	
+	/**
+	 * 
+	 * Check if Object from key is a Long or Integer.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a Long or Integer, {@code true} when a Long or Integer.
+	 */
+	public boolean isWholeNumber(int i) {
+		Object oValue = get(i);
+		if (oValue == null) return false;
+		if (oValue instanceof Long) return true;
+		if (oValue instanceof Integer) return true;
+		return false;
+	};
+	
+	/**
+	 * 
+	 * Check if Object from key is a Double or Float.
+	 * 
+	 * @param i Postion of Object.
+	 * @return {@code false} when not a Double or Float, {@code true} when a Double or Float.
+	 */
+	public boolean isFractionalNumber(int i) {
+		Object oValue = get(i);
+		if (oValue == null) return false;
+		if (oValue instanceof Double) return true;
+		if (oValue instanceof Float) return true;
+		return false;
+	};
+	
+	/**
 	 * Get Integer at given position,<br>
 	 * must be inbound 0-size.
 	 * 
@@ -483,6 +550,34 @@ public class JSONArray {
 	 */
 	public int getInt(int i) {
 		return (int) get(i, 0, Integer.class);
+	};
+	
+	/**
+	 * Get Integer at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @return {@code def} when out of bounds or when not a Integer, Integer when found.
+	 */
+	public long getInt(int i, long def) {
+		return (long) get(i, def, Integer.class);
+	};
+	
+	/**
+	 * Get Integer at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @param convert Allow to convert a Long to Integer.
+	 * @return {@code def} when out of bounds or when not a Integer, Integer when found.
+	 */
+	public long getInt(int i, long def, boolean convert) {
+		Object oValue = get(i, def);
+		if (oValue instanceof Integer) return (int) oValue;
+		if (convert && (oValue instanceof Long)) return Long.valueOf((long) oValue).intValue();
+		return def;
 	};
 	
 	/**
@@ -508,6 +603,34 @@ public class JSONArray {
 	};
 	
 	/**
+	 * Get Long at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @return {@code def} when out of bounds or when not a Long, Long when found.
+	 */
+	public long getLong(int i, long def) {
+		return (long) get(i, def, Long.class);
+	};
+	
+	/**
+	 * Get Long at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @param convert Allow to convert a Integer to Long.
+	 * @return {@code def} when out of bounds or when not a Long, Long when found.
+	 */
+	public long getLong(int i, long def, boolean convert) {
+		Object oValue = get(i, def);
+		if (oValue instanceof Long) return (long) oValue;
+		if (convert && (oValue instanceof Integer)) return Integer.valueOf((int) oValue).longValue();
+		return def;
+	};
+	
+	/**
 	 * Check if Object at given position is a Long,<br>
 	 * must be inbound 0-size.
 	 * 
@@ -527,6 +650,34 @@ public class JSONArray {
 	 */
 	public double getDouble(int i) {
 		return (double) get(i, 0.0D, Double.class);
+	};
+	
+	/**
+	 * Get Double at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, Double when found.
+	 */
+	public double getDouble(int i, double def) {
+		return (double) get(i, def, Double.class);
+	};
+	
+	/**
+	 * Get Double at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @param convert Allow to convert a Float to Double.
+	 * @return {@code def} when not found, Double when found.
+	 */
+	public double getDouble(int i, double def, boolean convert) {
+		Object oValue = get(i, def);
+		if (oValue instanceof Double) return (double) oValue;
+		if (convert && (oValue instanceof Float)) return Float.valueOf((float) oValue).doubleValue();
+		return def;
 	};
 	
 	/**
@@ -552,6 +703,34 @@ public class JSONArray {
 	};
 	
 	/**
+	 * Get Float at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, Float when found.
+	 */
+	public float getFloat(int i, float def) {
+		return (float) get(i, def, Float.class);
+	};
+	
+	/**
+	 * Get Float at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @param convert Allow to convert a Double to Float.
+	 * @return {@code def} when not found, Float when found.
+	 */
+	public float getFloat(int i, float def, boolean convert) {
+		Object oValue = get(i, def);
+		if (oValue instanceof Float) return (float) oValue;
+		if (convert && (oValue instanceof Double)) return Double.valueOf((double) oValue).floatValue();
+		return def;
+	};
+	
+	/**
 	 * Check if Object at given position is a Float,<br>
 	 * must be inbound 0-size.
 	 * 
@@ -571,6 +750,18 @@ public class JSONArray {
 	 */
 	public boolean getBoolean(int i) {
 		return (boolean) get(i, false, Boolean.class);
+	};
+	
+	/**
+	 * Get Boolean at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @return {@code def} when out of bounds or when not a Boolean, Boolean when found.
+	 */
+	public boolean getBoolean(int i, boolean def) {
+		return (boolean) get(i, def, Boolean.class);
 	};
 	
 	/**
@@ -596,6 +787,18 @@ public class JSONArray {
 	};
 	
 	/**
+	 * Get JSONObject at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @return {@code def} when out of bounds or when not a JSONObject, JSONObject when found.
+	 */
+	public JSONObject getJSONObject(int i, JSONObject def) {
+		return (JSONObject) get(i, def, JSONObject.class);
+	};
+	
+	/**
 	 * Check if Object at given position is a JSONObject,<br>
 	 * must be inbound 0-size.
 	 * 
@@ -618,6 +821,18 @@ public class JSONArray {
 	};
 	
 	/**
+	 * Get JSONArray at given position,<br>
+	 * must be inbound 0-size.
+	 * 
+	 * @param i Postion of Object.
+	 * @param def Default return when not found.
+	 * @return {@code def} when out of bounds or when not a JSONArray, JSONArray when found.
+	 */
+	public JSONArray getJSONArray(int i, JSONArray def) {
+		return (JSONArray) get(i, def, JSONArray.class);
+	};
+	
+	/**
 	 * Check if Object at given position is a JSONArray,<br>
 	 * must be inbound 0-size.
 	 * 
@@ -626,46 +841,6 @@ public class JSONArray {
 	 */
 	public boolean isJSONArray(int i) {
 		return isValue(i, JSONArray.class);
-	};
-	
-	/**
-	 * Get List&lt;?&gt; at given position,<br>
-	 * must be inbound 0-size.
-	 * 
-	 * @param i Postion of Object.
-	 * @return {@code null} when out of bounds or when not a List&lt;?&gt;, List&lt;?&gt; when found.
-	 */
-	public List<?> getList(int i) {
-		return getList(i, null);
-	};
-	
-	/**
-	 * Get List&lt;cls&gt; at given position,<br>
-	 * must be inbound 0-size.
-	 * 
-	 * @param i Postion of Object.
-	 * @param cls Class to check for.
-	 * @return {@code null} when out of bounds or when not a List&lt;{@code cls}&gt;, List&lt;{@code cls}&gt; when found.
-	 */
-	public List<?> getList(int i, Class<?> cls) {
-		List<?> list = (List<?>) get(i, null, List.class);
-		if (cls == null || list == null) return list;
-		List<Object> clsList = new ArrayList<>();
-		for (Object obj : list) {
-			if (cls.isInstance(obj)) clsList.add(obj);
-		};
-		return clsList;
-	};
-	
-	/**
-	 * Check if Object at given position is a List,<br>
-	 * must be inbound 0-size.
-	 * 
-	 * @param i Postion of Object.
-	 * @return {@code false} when out of bounds or not a List, {@code true} when a List.
-	 */
-	public boolean isList(int i) {
-		return isValue(i, List.class);
 	};
 	
 };

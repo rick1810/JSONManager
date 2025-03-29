@@ -2,6 +2,7 @@ package com.dutch_computer_technology.JSONManager.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +12,9 @@ import com.dutch_computer_technology.JSONManager.utils.JSONParser;
 import com.dutch_computer_technology.JSONManager.utils.JSONStringify;
 import com.dutch_computer_technology.JSONManager.utils.JSONUtils;
 
+/**
+ * Get/Put a {@code Object} using a {@code String} key
+ */
 public class JSONObject {
 	
 	private Map<String, Object> data;
@@ -28,7 +32,7 @@ public class JSONObject {
 	 * Create &amp; Parse a JSONObject from a Byte array.
 	 * 
 	 * @param bytes Byte array to be parsed.
-	 * @throws JSONParseException
+	 * @throws JSONParseException When parsing fails.
 	 */
 	public JSONObject(byte[] bytes) throws JSONParseException {
 		
@@ -41,7 +45,7 @@ public class JSONObject {
 	 * Create &amp; Parse a JSONObject from a String.
 	 * 
 	 * @param str String to be parsed.
-	 * @throws JSONParseException
+	 * @throws JSONParseException When parsing fails.
 	 */
 	public JSONObject(String str) throws JSONParseException {
 		
@@ -62,10 +66,21 @@ public class JSONObject {
 	};
 	
 	/**
+	 * Copy the JSONObject.
+	 * 
+	 * @return Returns a copy of this JSONObject.
+	 */
+	public JSONObject copy() {
+		
+		return new JSONObject(this);
+		
+	};
+	
+	/**
 	 * Parse a String to a JSONObject.
 	 * 
 	 * @param str String to be parsed.
-	 * @throws JSONParseException
+	 * @throws JSONParseException When parsing fails.
 	 */
 	public void parse(String str) throws JSONParseException {
 		
@@ -80,7 +95,7 @@ public class JSONObject {
 	 */
 	public String stringify() {
 		
-		return stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
+		return _stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
 		
 	};
 	
@@ -93,7 +108,7 @@ public class JSONObject {
 	 */
 	public String stringify(boolean suffix, boolean tabs) {
 		
-		return stringify(suffix, tabs, 0);
+		return _stringify(suffix, tabs, 0);
 		
 	};
 	
@@ -105,7 +120,7 @@ public class JSONObject {
 	 * @param myTabs The ammount of tabs, Should be 0.
 	 * @return Returns a stringified JSON String.
 	 */
-	public String stringify(boolean suffix, boolean tabs, int myTabs) {
+	public String _stringify(boolean suffix, boolean tabs, int myTabs) {
 		
 		return JSONStringify.Stringify(data, suffix, tabs, myTabs);
 		
@@ -222,10 +237,28 @@ public class JSONObject {
 	/**
 	 * Get keys from JSONObject.
 	 * 
-	 * @return All the key's inside of JSONObject.
+	 * @return All the key's inside the JSONObject.
 	 */
 	public Set<String> keySet() {
-		return data.keySet();
+		return new HashSet<String>(data.keySet());
+	};
+	
+	/**
+	 * Get Object's from JSONObject.
+	 * 
+	 * @return All the values inside the JSONObject.
+	 */
+	public List<Object> values() {
+		return new ArrayList<Object>(data.values());
+	};
+	
+	/**
+	 * Get number of Keys from JSONObject.
+	 * 
+	 * @return Total Keys inside the JSONObject.
+	 */
+	public int size() {
+		return data.keySet().size();
 	};
 	
 	/**
@@ -310,7 +343,7 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Check if value from key is a given Class.
+	 * check if Object from key is a given Class.
 	 * 
 	 * @param key key.
 	 * @param cls Class to check for.
@@ -335,13 +368,66 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Check if value from key is a String.
+	 * Get String from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, String when found.
+	 */
+	public String getString(String key, String def) {
+		return (String) get(key, def, String.class);
+	};
+	
+	/**
+	 * check if Object from key is a String.
 	 * 
 	 * @param key key.
 	 * @return {@code false} when not a String, {@code true} when a String.
 	 */
 	public boolean isString(String key) {
 		return isValue(key, String.class);
+	};
+	
+	/**
+	 * 
+	 * check if Object from key is a number,<br>
+	 * Integer, Long, Double, Float.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a number, {@code true} when a number.
+	 */
+	public boolean isNumber(String key) {
+		return isValue(key, Number.class);
+	};
+	
+	/**
+	 * 
+	 * check if Object from key is a Long or Integer.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a Long or Integer, {@code true} when a Long or Integer.
+	 */
+	public boolean isWholeNumber(String key) {
+		Object oValue = get(key);
+		if (oValue == null) return false;
+		if (oValue instanceof Long) return true;
+		if (oValue instanceof Integer) return true;
+		return false;
+	};
+	
+	/**
+	 * 
+	 * check if Object from key is a Double or Float.
+	 * 
+	 * @param key key.
+	 * @return {@code false} when not a Double or Float, {@code true} when a Double or Float.
+	 */
+	public boolean isFractionalNumber(String key) {
+		Object oValue = get(key);
+		if (oValue == null) return false;
+		if (oValue instanceof Double) return true;
+		if (oValue instanceof Float) return true;
+		return false;
 	};
 	
 	/**
@@ -355,7 +441,33 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Check if value from key is a Integer.
+	 * Get Integer from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, Integer when found.
+	 */
+	public int getInt(String key, int def) {
+		return (int) get(key, def, Integer.class);
+	};
+	
+	/**
+	 * Get Integer from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @param convert Allow to convert a Long to Integer.
+	 * @return {@code def} when not found, Integer when found.
+	 */
+	public int getInt(String key, int def, boolean convert) {
+		Object oValue = get(key, def);
+		if (oValue instanceof Integer) return (int) oValue;
+		if (convert && (oValue instanceof Long)) return Long.valueOf((long) oValue).intValue();
+		return def;
+	};
+	
+	/**
+	 * check if Object from key is a Integer.
 	 * 
 	 * @param key key.
 	 * @return {@code false} when not a Integer, {@code true} when a Integer.
@@ -375,7 +487,33 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Check if value from key is a Long.
+	 * Get Long from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, Long when found.
+	 */
+	public long getLong(String key, long def) {
+		return (long) get(key, def, Long.class);
+	};
+	
+	/**
+	 * Get Long from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @param convert Allow to convert a Integer to Long.
+	 * @return {@code def} when not found, Long when found.
+	 */
+	public long getLong(String key, long def, boolean convert) {
+		Object oValue = get(key, def);
+		if (oValue instanceof Long) return (long) oValue;
+		if (convert && (oValue instanceof Integer)) return Integer.valueOf((int) oValue).longValue();
+		return def;
+	};
+	
+	/**
+	 * check if Object from key is a Long.
 	 * 
 	 * @param key key.
 	 * @return {@code false} when not a Long, {@code true} when a Long.
@@ -395,7 +533,33 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Check if value from key is a Double.
+	 * Get Double from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, Double when found.
+	 */
+	public double getDouble(String key, double def) {
+		return (double) get(key, def, Double.class);
+	};
+	
+	/**
+	 * Get Double from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @param convert Allow to convert a Float to Double.
+	 * @return {@code def} when not found, Double when found.
+	 */
+	public double getDouble(String key, long def, boolean convert) {
+		Object oValue = get(key, def);
+		if (oValue instanceof Double) return (double) oValue;
+		if (convert && (oValue instanceof Float)) return Float.valueOf((float) oValue).doubleValue();
+		return def;
+	};
+	
+	/**
+	 * check if Object from key is a Double.
 	 * 
 	 * @param key key.
 	 * @return {@code false} when not a Double, {@code true} when a Double.
@@ -415,7 +579,33 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Check if value from key is a Float.
+	 * Get Float from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, Float when found.
+	 */
+	public float getFloat(String key, float def) {
+		return (float) get(key, def, Float.class);
+	};
+	
+	/**
+	 * Get Float from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @param convert Allow to convert a Double to Float.
+	 * @return {@code def} when not found, Float when found.
+	 */
+	public float getFloat(String key, float def, boolean convert) {
+		Object oValue = get(key, def);
+		if (oValue instanceof Float) return (float) oValue;
+		if (convert && (oValue instanceof Double)) return Double.valueOf((double) oValue).floatValue();
+		return def;
+	};
+	
+	/**
+	 * check if Object from key is a Float.
 	 * 
 	 * @param key key.
 	 * @return {@code false} when not a Float, {@code true} when a Float.
@@ -435,7 +625,18 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Check if value from key is a Boolean.
+	 * Get Boolean from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, Boolean when found.
+	 */
+	public boolean getBoolean(String key, boolean def) {
+		return (boolean) get(key, def, Boolean.class);
+	};
+	
+	/**
+	 * check if Object from key is a Boolean.
 	 * 
 	 * @param key key.
 	 * @return {@code false} when not a Boolean, {@code true} when a Boolean.
@@ -455,7 +656,18 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Check if value from key is a JSONObject.
+	 * Get JSONObject from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, JSONObject when found.
+	 */
+	public JSONObject getJSONObject(String key, JSONObject def) {
+		return (JSONObject) get(key, def, JSONObject.class);
+	};
+	
+	/**
+	 * check if Object from key is a JSONObject.
 	 * 
 	 * @param key key.
 	 * @return {@code false} when not a JSONObject, {@code true} when a JSONObject.
@@ -475,50 +687,24 @@ public class JSONObject {
 	};
 	
 	/**
-	 * Check if value from key is a JSONArray.
+	 * Get JSONArray from key.
+	 * 
+	 * @param key key.
+	 * @param def Default return when not found.
+	 * @return {@code def} when not found, JSONArray when found.
+	 */
+	public JSONArray getJSONArray(String key, JSONArray def) {
+		return (JSONArray) get(key, def, JSONArray.class);
+	};
+	
+	/**
+	 * check if Object from key is a JSONArray.
 	 * 
 	 * @param key key.
 	 * @return {@code false} when not a JSONArray, {@code true} when a JSONArray.
 	 */
 	public boolean isJSONArray(String key) {
 		return isValue(key, JSONArray.class);
-	};
-	
-	/**
-	 * Get List&lt;?&gt; from key.
-	 * 
-	 * @param key key.
-	 * @return {@code null} when not found, List&lt;?&gt; when found.
-	 */
-	public List<?> getList(String key) {
-		return getList(key, null);
-	};
-	
-	/**
-	 * Get List&lt;{@code cls}&gt; from key.
-	 * 
-	 * @param key key.
-	 * @param cls Class to check for.
-	 * @return {@code null} when not found, List&lt;{@code cls}&gt; when found.
-	 */
-	public List<?> getList(String key, Class<?> cls) {
-		List<?> list = (List<?>) get(key, null, List.class);
-		if (cls == null || list == null) return list;
-		List<Object> clsList = new ArrayList<>();
-		for (Object obj : list) {
-			if (cls.isInstance(obj)) clsList.add(obj);
-		};
-		return clsList;
-	};
-	
-	/**
-	 * Check if value from key is a List.
-	 * 
-	 * @param key key.
-	 * @return {@code false} when not a List, {@code true} when a List.
-	 */
-	public boolean isList(String key) {
-		return isValue(key, List.class);
 	};
 	
 };

@@ -1,6 +1,14 @@
 package com.dutch_computer_technology.JSONManager.utils;
 
+/**
+ * Utils &amp; Settings
+ */
 public class JSONUtils {
+	
+	/**
+	 * Utils &amp; Settings
+	 */
+	public JSONUtils() {};
 	
 	private static boolean suffix = false;
 	private static boolean tabs = false;
@@ -11,7 +19,7 @@ public class JSONUtils {
 	 * @return Version of the JSONManager
 	 */
 	public static String version() {
-		return "2.0.1";
+		return "2.1.0";
 	};
 	
 	/**

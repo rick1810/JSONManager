@@ -1,6 +1,7 @@
 package com.dutch_computer_technology.JSONManager.utils;
 
 import java.lang.reflect.Method;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,15 @@ import java.util.Map;
 import com.dutch_computer_technology.JSONManager.data.JSONArray;
 import com.dutch_computer_technology.JSONManager.data.JSONObject;
 
+/**
+ * Stringifier for JSONObject's &amp; JSONArray's
+ */
 public class JSONStringify {
+	
+	/**
+	 * Stringifier for JSONObject's &amp; JSONArray's
+	 */
+	public JSONStringify() {};
 	
 	/**
 	 * Stringify a JSONObject
@@ -221,10 +230,10 @@ public class JSONStringify {
 		if (obj instanceof String) return new StringBuilder("\"").append(JSONUtils.escape((String) obj)).append("\"").toString();
 		
 		//Object
-		if (obj instanceof JSONObject) return ((JSONObject) obj).stringify(suffix, tabs, myTabs);
+		if (obj instanceof JSONObject) return ((JSONObject) obj)._stringify(suffix, tabs, myTabs);
 		
 		//Array
-		if (obj instanceof JSONArray) return ((JSONArray) obj).stringify(suffix, tabs, myTabs);
+		if (obj instanceof JSONArray) return ((JSONArray) obj)._stringify(suffix, tabs, myTabs);
 		
 		//Boolean
 		if (obj instanceof Boolean) return obj.toString();
@@ -254,19 +263,6 @@ public class JSONStringify {
 				return new StringBuilder(Float.toString(flo)).append(suffix ? "F" : "").toString();
 				
 			};
-		
-		//List
-		if (obj instanceof List) {
-			
-			List<?> list = (List<?>) obj;
-			JSONArray arr = new JSONArray();
-			for (Object o : list) arr.add(o);
-			JSONObject json = new JSONObject();
-			json.put("values", arr);
-			json.put("__class", List.class.getName());
-			return json.stringify(suffix, tabs, myTabs);
-			
-		};
 		
 		//Object
 		Class<?> cls = obj.getClass();
