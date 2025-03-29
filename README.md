@@ -14,7 +14,7 @@ With support for parsing custom classes<br/>
 ```xml
 <dependency>
   <groupId>com.dutch_computer_technology</groupId>
-  <artifactId>JSONManager</artifactId>
+  <artifactId>jsonmanager</artifactId>
   <version>x.x.x</version>
 </dependency>
 ```
