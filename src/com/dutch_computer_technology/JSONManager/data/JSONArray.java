@@ -64,9 +64,9 @@ public class JSONArray {
 	/**
 	 * Copy the JSONArray.
 	 * 
-	 * @return Returns a copy of this JSONArray.
+	 * @return Returns a clone of this JSONArray.
 	 */
-	public JSONArray copy() {
+	public JSONArray clone() {
 		
 		return new JSONArray(this);
 		

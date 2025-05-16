@@ -68,9 +68,9 @@ public class JSONObject {
 	/**
 	 * Copy the JSONObject.
 	 * 
-	 * @return Returns a copy of this JSONObject.
+	 * @return Returns a clone of this JSONObject.
 	 */
-	public JSONObject copy() {
+	public JSONObject clone() {
 		
 		return new JSONObject(this);
 		
