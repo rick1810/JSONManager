@@ -27,17 +27,46 @@ You can download any stable or newest version in [/releases](https://github.com/
 
 ## Settings
 
+### JSONConfig
+
+Use when not wanting to use the global settings,<br/>
+Using `new JSONConfig()` to create a new config.<br/>
+This will copy the current settings from JSONUtils.
+
+### Threaded
+
+Parse &amp; Stringify using Threads,<br/>
+instead of single core.<br/>
+Disabled by default.
+
+> [!NOTE]
+> Using `stringify(config)` `toString(config)` `toBytes(config)`<br/>
+> `new JSONObject(config)` `new JSONArray(config)`<br/>
+> For when you don't want to use the global settings
+
+> [!WARNING]
+> MultiThreading could be a bit slower for small JSON files,<br/>
+> It's recommended to keep this off for smaller files.</br>
+> And to use it for big long ones.
+
+- `JSONUtils.threaded()` : Returns true/false for threaded suffix
+- `JSONUtils.threaded(true/false)` : Set global threaded to true/false
+- `new JSONConfig().threaded()` : Returns true/false for threaded
+- `new JSONConfig().threaded(true/false)` : Set threaded to true/false
+
 ### Syntax
 
 Add suffix's behind Value's when stringified,<br/>
 Disabled by default.
 
 > [!NOTE]
-> Using `stringify(syntax)` `toString(syntax)` `toBytes(syntax)`<br/>
+> Using `stringify(config)` `toString(config)` `toBytes(config)`<br/>
 > For when you don't want to use the global settings
 
-- `suffix()` : Returns true/false for global suffix
-- `suffix(true/false)` : Set global suffix to true/false
+- `JSONUtils.suffix()` : Returns true/false for global suffix
+- `JSONUtils.suffix(true/false)` : Set global suffix to true/false
+- `new JSONConfig().suffix()` : Returns true/false for suffix
+- `new JSONConfig().suffix(true/false)` : Set suffix to true/false
 
 ### Tabs
 
@@ -45,11 +74,13 @@ Add tabs when stringified,<br/>
 Disabled by default.
 
 > [!NOTE]
-> Using `stringify(syntax, tabs)` `toString(syntax, tabs)` `toBytes(syntax, tabs)`<br/>
+> Using `stringify(config)` `toString(config)` `toBytes(config)`<br/>
 > For when you don't want to use the global settings
 
-- `beautifyTabs()` : Returns true/false for global tabs
-- `beautifyTabs(true/false)` : Set global tabs to true/false
+- `JSONUtils.beautifyTabs()` : Returns true/false for global tabs
+- `JSONUtils.beautifyTabs(true/false)` : Set global tabs to true/false
+- `new JSONConfig().suffix()` : Returns true/false for tabs
+- `new JSONConfig().suffix(true/false)` : Set tabs to true/false
 
 <br/>
 <br/>
@@ -108,7 +139,7 @@ System.out.println(jsonD.stringify()); // {"BigNumber":5}
 JSONUtils.suffix(true);
 System.out.println(jsonD.toString()); // {"BigNumber":5L}
 System.out.println(jsonD.stringify()); // {"BigNumber":5L}
-JSONUtils.beautifyTabs(true);
+JSONUtils.tabs(true);
 System.out.println(jsonD.stringify()); // {
                                             "BigNumber":5L
                                           }
@@ -119,42 +150,56 @@ System.out.println(jsonD.stringify(true, false)); // {"BigNumber":5L}
 System.out.println(jsonD.stringify(false, false)); // {"BigNumber":5}
 
 public class Car {
-  private int model;
-  public Car(int model) {
+  private String brand;
+  private String model;
+  private int seats;
+  public Car(String brand, String model, int seats) {
+    this.brand = brand;
     this.model = model;
+    this.seats = seats;
   };
   public Car(JSONObject json) {
-    this.model = json.getInt("model");
+    this.brand = json.getString("brand");
+    this.model = json.getString("model");
+    this.seats = json.getInt("seats");
   };
-  public int getModel() {
+  public String getBrand() {
+    return this.brand;
+  };
+  public String getModel() {
     return this.model;
+  };
+  public int getSeats() {
+    return this.seats;
   };
   public JSONObject toJSON() {
     JSONObject json = new JSONObject();
+    json.put("brand", this.brand);
     json.put("model", this.model);
+    json.put("seats", this.seats);
     return json;
   };
 };
 
 JSONUtils.suffix(true);
-JSONUtils.beautifyTabs(false);
+JSONUtils.tabs(false);
 
 JSONObject jsonE = new JSONObject();
-jsonE.put("car1", new Car(2));
+jsonE.put("myCar", new Car("Fiat", "Panda", 5));
 String carJsonStringified = jsonE.stringify();
-System.out.println(carJsonStringified); // {"car1":{"model":2I,"__class":"github.JSONManager.Car"}}
+System.out.println(carJsonStringified); // {"car1":{"brand":"Fiat","model":"Panda","seats":5I,"__class":"github.JSONManager.Car"}}
 
 JSONObject jsonF = new JSONObject(carJsonStringified);
 
 Car myCar = null;
-if (jsonF.isValue("car1", Car.class)) { //Check if it's a Car class
-  myCar = (Car) jsonF.get("car1");
-} else if (jsonF.isJSONObject("car1")) { //Check if it's a JSONObject
-  myCar = new Car(jsonF.getJSONObject("car1"));
+if (jsonF.isValue("myCar", Car.class)) { //Check if it's a Car class
+  myCar = (Car) jsonF.get("myCar");
+} else if (jsonF.isJSONObject("myCar")) { //Check if it's a JSONObject
+  myCar = new Car(jsonF.getJSONObject("myCar"));
 };
 
 if (myCar != null) {
-  System.out.println("I found my car!, it's a model " + myCar.getModel());
+  System.out.println("I found my car, it's a " + myCar.getBrand() + " " + myCar.getModel() + ", With " + myCar.getSeats() + " seats!");
 } else {
   System.out.println("I could't find my car :(");
 };
