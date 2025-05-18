@@ -23,14 +23,14 @@ public class JSONStringify {
 	 * Stringify a JSONObject
 	 * 
 	 * @param data The Map to stringify.
-	 * @param suffix To use suffixes.
-	 * @param tabs To use tabs.
+	 * @param config JSONConfig config for Stringifying.
 	 * @param myTabs The ammount of tabs.
 	 * @return The stringified JSONObject
 	 */
-	public static String Stringify(Map<String, Object> data, boolean suffix, boolean tabs, int myTabs) {
+	public static String Stringify(Map<String, Object> data, JSONConfig config, int myTabs) {
 		
 		if (data.isEmpty()) return "{}";
+		if (config == null) config = new JSONConfig();
 		
 		StringBuilder str = new StringBuilder("{");
 		myTabs++;
@@ -40,10 +40,20 @@ public class JSONStringify {
 		for (int i = 0; i < keys.length; i++) {
 			
 			String key = (String) keys[i];
+			Object value = data.get(key);
 			
-			Unloader unloader = new Unloader(key, data.get(key), suffix, tabs, myTabs);
+			Unloader unloader = new Unloader(key, value, config, myTabs);
 			unloaders.add(unloader);
-			unloader.start();
+			
+			if (config.threaded()) {
+				
+				unloader.start();
+				
+			} else {
+				
+				unloader.run();
+				
+			};
 			
 		};
 		
@@ -61,7 +71,7 @@ public class JSONStringify {
 		
 		for (int i = 0; i < unloaders.size(); i++) {
 			
-			if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
+			if (config.tabs()) str.append("\n").append(JSONUtils.tabs(myTabs));
 			
 			Unloader unloader = unloaders.get(i);
 			
@@ -74,7 +84,7 @@ public class JSONStringify {
 		};
 		
 		myTabs--;
-		if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
+		if (config.tabs()) str.append("\n").append(JSONUtils.tabs(myTabs));
 		return str.append("}").toString();
 		
 	};
@@ -83,14 +93,14 @@ public class JSONStringify {
 	 * Stringify a JSONArray
 	 * 
 	 * @param data The List to stringify.
-	 * @param suffix To use suffixes.
-	 * @param tabs To use tabs.
+	 * @param config JSONConfig config for Stringifying.
 	 * @param myTabs The ammount of tabs.
 	 * @return The stringified JSONArray
 	 */
-	public static String Stringify(List<Object> data, boolean suffix, boolean tabs, int myTabs) {
+	public static String Stringify(List<Object> data, JSONConfig config, int myTabs) {
 		
 		if (data.isEmpty()) return "[]";
+		if (config == null) config = new JSONConfig();
 		
 		StringBuilder str = new StringBuilder("[");
 		myTabs++;
@@ -98,9 +108,18 @@ public class JSONStringify {
 		List<Unloader> unloaders = new ArrayList<Unloader>();
 		for (int i = 0; i < data.size(); i++) {
 			
-			Unloader unloader = new Unloader(data.get(i), suffix, tabs, myTabs);
+			Unloader unloader = new Unloader(null, data.get(i), config, myTabs);
 			unloaders.add(unloader);
-			unloader.start();
+			
+			if (config.threaded()) {
+				
+				unloader.start();
+				
+			} else {
+				
+				unloader.run();
+				
+			};
 			
 		};
 		
@@ -118,7 +137,7 @@ public class JSONStringify {
 		
 		for (int i = 0; i < unloaders.size(); i++) {
 			
-			if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
+			if (config.tabs()) str.append("\n").append(JSONUtils.tabs(myTabs));
 			
 			str.append(unloaders.get(i).getStringified());
 			
@@ -127,7 +146,7 @@ public class JSONStringify {
 		};
 		
 		myTabs--;
-		if (tabs) str.append("\n").append(JSONUtils.beautifyTabs(myTabs));
+		if (config.tabs()) str.append("\n").append(JSONUtils.tabs(myTabs));
 		return str.append("]").toString();
 		
 	};
@@ -137,34 +156,18 @@ public class JSONStringify {
 		private String key;
 		private Object value;
 		
-		private boolean suffix;
-		private boolean tabs;
+		private JSONConfig config;
 		private int myTabs;
 		
 		private String stringified;
 		private boolean ready;
 		
-		public Unloader(String key, Object value, boolean suffix, boolean tabs, int myTabs) {
+		public Unloader(String key, Object value, JSONConfig config, int myTabs) {
 			
 			this.key = key;
 			this.value = value;
 			
-			this.suffix = suffix;
-			this.tabs = tabs;
-			this.myTabs = myTabs;
-			
-			this.stringified = null;
-			this.ready = false;
-			
-		};
-		
-		public Unloader(Object value, boolean suffix, boolean tabs, int myTabs) {
-			
-			this.key = null;
-			this.value = value;
-			
-			this.suffix = suffix;
-			this.tabs = tabs;
+			this.config = config;
 			this.myTabs = myTabs;
 			
 			this.stringified = null;
@@ -174,7 +177,7 @@ public class JSONStringify {
 		
 		public String getKey() {
 			
-			return (String) this.key;
+			return this.key;
 			
 		};
 		
@@ -193,7 +196,7 @@ public class JSONStringify {
 		@Override
 		public void run() {
 			
-			this.stringified = Stringify(this.value, this.suffix, this.tabs, this.myTabs);
+			this.stringified = Stringify(this.value, this.config, this.myTabs);
 			this.ready = true;
 			
 		};
@@ -208,7 +211,7 @@ public class JSONStringify {
 	 */
 	public static String Stringify(Object obj) {
 		
-		return Stringify(obj, JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
+		return Stringify(obj, new JSONConfig(), 0);
 		
 	};
 	
@@ -216,12 +219,11 @@ public class JSONStringify {
 	 * Returns a stringified Value from a Object
 	 * 
 	 * @param obj To be stringified.
-	 * @param suffix To use suffixes.
-	 * @param tabs To use tabs.
+	 * @param config JSONConfig config for Stringifying.
 	 * @param myTabs The ammount of tabs.
 	 * @return The stringified Value
 	 */
-	public static String Stringify(Object obj, boolean suffix, boolean tabs, int myTabs) {
+	public static String Stringify(Object obj, JSONConfig config, int myTabs) {
 		
 		//Null
 		if (obj == null) return "null";
@@ -230,13 +232,15 @@ public class JSONStringify {
 		if (obj instanceof String) return new StringBuilder("\"").append(JSONUtils.escape((String) obj)).append("\"").toString();
 		
 		//Object
-		if (obj instanceof JSONObject) return ((JSONObject) obj)._stringify(suffix, tabs, myTabs);
+		if (obj instanceof JSONObject) return ((JSONObject) obj)._stringify(config, myTabs);
 		
 		//Array
-		if (obj instanceof JSONArray) return ((JSONArray) obj)._stringify(suffix, tabs, myTabs);
+		if (obj instanceof JSONArray) return ((JSONArray) obj)._stringify(config, myTabs);
 		
 		//Boolean
 		if (obj instanceof Boolean) return obj.toString();
+		
+		boolean suffix = config.suffix();
 		
 		//Numbers
 			

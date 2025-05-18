@@ -10,6 +10,7 @@ public class JSONUtils {
 	 */
 	public JSONUtils() {};
 	
+	private static boolean threaded = false;
 	private static boolean suffix = false;
 	private static boolean tabs = false;
 	
@@ -19,7 +20,31 @@ public class JSONUtils {
 	 * @return Version of the JSONManager
 	 */
 	public static String version() {
-		return "2.1.0";
+		
+		return "3.0.0";
+		
+	};
+	
+	/**
+	 * Enable/Disable Threading for Parsing/Stringifying JSON
+	 * 
+	 * @param threaded {@code true}/{@code false}
+	 */
+	public static void threaded(boolean threaded) {
+		
+		JSONUtils.threaded = threaded;
+		
+	};
+	
+	/**
+	 * Use Threads to Parse/Stringify JSON
+	 * 
+	 * @return {@code true} When Threading enabled, {@code false} When using single Thread.
+	 */
+	public static boolean threaded() {
+		
+		return threaded;
+		
 	};
 	
 	/**
@@ -49,7 +74,7 @@ public class JSONUtils {
 	 * 
 	 * @param tabs {@code true}/{@code false}
 	 */
-	public static void beautifyTabs(boolean tabs) {
+	public static void tabs(boolean tabs) {
 		
 		JSONUtils.tabs = tabs;
 		
@@ -60,7 +85,7 @@ public class JSONUtils {
 	 * 
 	 * @return {@code true} When tabs are added, {@code false} When tabs will not be added.
 	 */
-	public static boolean beautifyTabs() {
+	public static boolean tabs() {
 		
 		return tabs;
 		
@@ -72,7 +97,7 @@ public class JSONUtils {
 	 * @param tabs The ammount needed.
 	 * @return The ammount of tabs needed.
 	 */
-	public static String beautifyTabs(int tabs) {
+	public static String tabs(int tabs) {
 		
 		if (tabs <= 0) return "";
 		

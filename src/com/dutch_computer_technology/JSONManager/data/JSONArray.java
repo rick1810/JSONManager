@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dutch_computer_technology.JSONManager.exception.JSONParseException;
+import com.dutch_computer_technology.JSONManager.utils.JSONConfig;
 import com.dutch_computer_technology.JSONManager.utils.JSONParser;
 import com.dutch_computer_technology.JSONManager.utils.JSONStringify;
-import com.dutch_computer_technology.JSONManager.utils.JSONUtils;
 
 /**
  * Get/Add a {@code Object} using a {@code Integer} index
@@ -38,12 +38,40 @@ public class JSONArray {
 	};
 	
 	/**
+	 * Create &amp; Parse a JSONArray from a Byte array.
+	 * 
+	 * @param bytes Byte array to be parsed.
+	 * @param config JSONConfig config for Parsing.
+	 * @throws JSONParseException When parsing fails.
+	 */
+	public JSONArray(byte[] bytes, JSONConfig config) throws JSONParseException {
+		
+		data = new ArrayList<Object>();
+		parse(new String(bytes));
+		
+	};
+	
+	/**
 	 * Create &amp; Parse a JSONArray from a String.
 	 * 
 	 * @param str String to be parsed.
 	 * @throws JSONParseException When parsing fails.
 	 */
 	public JSONArray(String str) throws JSONParseException {
+		
+		data = new ArrayList<Object>();
+		parse(str);
+		
+	};
+	
+	/**
+	 * Create &amp; Parse a JSONArray from a String.
+	 * 
+	 * @param str String to be parsed.
+	 * @param config JSONConfig config for Parsing.
+	 * @throws JSONParseException When parsing fails.
+	 */
+	public JSONArray(String str, JSONConfig config) throws JSONParseException {
 		
 		data = new ArrayList<Object>();
 		parse(str);
@@ -80,7 +108,7 @@ public class JSONArray {
 	 */
 	public void parse(String str) throws JSONParseException {
 		
-		new JSONParser(data, str);
+		new JSONParser(data, str, null);
 		
 	};
 	
@@ -91,34 +119,32 @@ public class JSONArray {
 	 */
 	public String stringify() {
 		
-		return _stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
+		return _stringify(null, 0);
 		
 	};
 	
 	/**
 	 * Create a stringified JSON String.
 	 * 
-	 * @param suffix To use suffixes.
-	 * @param tabs To use tabs.
+	 * @param config JSONConfig config for Parsing.
 	 * @return Returns a stringified JSON String.
 	 */
-	public String stringify(boolean suffix, boolean tabs) {
+	public String stringify(JSONConfig config) {
 		
-		return _stringify(suffix, tabs, 0);
+		return _stringify(config, 0);
 		
 	};
 	
 	/**
 	 * Create a stringified JSON String.
 	 * 
-	 * @param suffix To use suffixes.
-	 * @param tabs To use tabs.
+	 * @param config JSONConfig config for Parsing.
 	 * @param myTabs The ammount of tabs, Should be 0.
 	 * @return Returns a stringified JSON String.
 	 */
-	public String _stringify(boolean suffix, boolean tabs, int myTabs) {
+	public String _stringify(JSONConfig config, int myTabs) {
 		
-		return JSONStringify.Stringify(data, suffix, tabs, myTabs);
+		return JSONStringify.Stringify(data, config, myTabs);
 		
 	};
 	
@@ -131,20 +157,21 @@ public class JSONArray {
 	@Override
 	public String toString() {
 		
-		return toString(JSONUtils.suffix());
+		JSONConfig config = new JSONConfig();
+		config.tabs(false);
+		return toString(config);
 		
 	};
 	
 	/**
-	 * Create a stringified JSON String,<br>
-	 * ignores beautify rules.
+	 * Create a stringified JSON String.
 	 * 
-	 * @param suffix To use suffixes.
+	 * @param config JSONConfig config for Stringifying.
 	 * @return Returns a stringified JSON String.
 	 */
-	public String toString(boolean suffix) {
+	public String toString(JSONConfig config) {
 		
-		return stringify(suffix, false);
+		return stringify(config);
 		
 	};
 	
@@ -156,20 +183,21 @@ public class JSONArray {
 	 */
 	public byte[] toBytes() {
 		
-		return toString(JSONUtils.suffix()).getBytes();
+		JSONConfig config = new JSONConfig();
+		config.tabs(false);
+		return toBytes(config);
 		
 	};
 	
 	/**
-	 * Create a byte array from JSON,<br>
-	 * ignores beautify rules.
+	 * Create a byte array from JSON.
 	 * 
-	 * @param suffix To use suffixes.
+	 * @param config JSONConfig config for Stringifying.
 	 * @return Returns a stringified JSON byte array.
 	 */
-	public byte[] toBytes(boolean suffix) {
+	public byte[] toBytes(JSONConfig config) {
 		
-		return toString(suffix).getBytes();
+		return stringify(config).getBytes();
 		
 	};
 	

@@ -20,12 +20,14 @@ public class JSONParser {
 	 * 
 	 * @param data The Map to store the parsed data.
 	 * @param str String to be parsed.
+	 * @param config JSONConfig config for Parsing.
 	 * @throws JSONParseException When parsing fails.
 	 */
-	public JSONParser(Map<String, Object> data, String str) throws JSONParseException {
+	public JSONParser(Map<String, Object> data, String str, JSONConfig config) throws JSONParseException {
 		
 		if (data == null) throw new JSONParseException("Unexpected Null"); //Should never be Null.
 		if (str == null) throw new JSONParseException("Null"); //No String to parse.
+		if (config == null) config = new JSONConfig();
 		
 		str = JSONUtils.sanitize(str); //Remove any unneeded charaters.
 		if (!(str.startsWith("{") && str.endsWith("}"))) throw new JSONParseException("Not a JSONObject");
@@ -96,7 +98,16 @@ public class JSONParser {
 			
 			Loader loader = new Loader(key, oValue);
 			loaders.add(loader);
-			loader.start();
+			
+			if (config.threaded()) {
+				
+				loader.start();
+				
+			} else {
+				
+				loader.run();
+				
+			};
 			
 		};
 		
@@ -127,12 +138,14 @@ public class JSONParser {
 	 * 
 	 * @param data The List to store the parsed data.
 	 * @param str String to be parsed.
+	 * @param config JSONConfig config for Parsing.
 	 * @throws JSONParseException When parsing fails.
 	 */
-	public JSONParser(List<Object> data, String str) throws JSONParseException {
+	public JSONParser(List<Object> data, String str, JSONConfig config) throws JSONParseException {
 		
 		if (data == null) throw new JSONParseException("Unexpected Null"); //Should never be Null.
 		if (str == null) throw new JSONParseException("Null"); //No String to parse.
+		if (config == null) config = new JSONConfig();
 		
 		str = JSONUtils.sanitize(str); //Remove any unneeded charaters.
 		if (!(str.startsWith("[") && str.endsWith("]"))) throw new JSONParseException("Not a JSONArray");
@@ -188,9 +201,18 @@ public class JSONParser {
 		List<Loader> loaders = new ArrayList<Loader>();
 		for (String oValue : objs) {
 			
-			Loader loader = new Loader(oValue);
+			Loader loader = new Loader(null, oValue);
 			loaders.add(loader);
-			loader.start();
+			
+			if (config.threaded()) {
+				
+				loader.start();
+				
+			} else {
+				
+				loader.run();
+				
+			};
 			
 		};
 		
@@ -227,17 +249,6 @@ public class JSONParser {
 		public Loader(String key, String value) {
 			
 			this.key = key;
-			this.value = value;
-			
-			this.e = null;
-			this.obj = null;
-			this.ready = false;
-			
-		};
-		
-		public Loader(String value) {
-			
-			this.key = null;
 			this.value = value;
 			
 			this.e = null;

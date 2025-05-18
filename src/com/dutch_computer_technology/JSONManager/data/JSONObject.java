@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.dutch_computer_technology.JSONManager.exception.JSONParseException;
+import com.dutch_computer_technology.JSONManager.utils.JSONConfig;
 import com.dutch_computer_technology.JSONManager.utils.JSONParser;
 import com.dutch_computer_technology.JSONManager.utils.JSONStringify;
-import com.dutch_computer_technology.JSONManager.utils.JSONUtils;
 
 /**
  * Get/Put a {@code Object} using a {@code String} key
@@ -42,6 +42,20 @@ public class JSONObject {
 	};
 	
 	/**
+	 * Create &amp; Parse a JSONObject from a Byte array.
+	 * 
+	 * @param bytes Byte array to be parsed.
+	 * @param config JSONConfig config for Parsing.
+	 * @throws JSONParseException When parsing fails.
+	 */
+	public JSONObject(byte[] bytes, JSONConfig config) throws JSONParseException {
+		
+		data = new HashMap<String, Object>();
+		parse(new String(bytes), config);
+		
+	};
+	
+	/**
 	 * Create &amp; Parse a JSONObject from a String.
 	 * 
 	 * @param str String to be parsed.
@@ -51,6 +65,20 @@ public class JSONObject {
 		
 		data = new HashMap<String, Object>();
 		parse(str);
+		
+	};
+	
+	/**
+	 * Create &amp; Parse a JSONObject from a String.
+	 * 
+	 * @param str String to be parsed.
+	 * @param config JSONConfig config for Parsing.
+	 * @throws JSONParseException When parsing fails.
+	 */
+	public JSONObject(String str, JSONConfig config) throws JSONParseException {
+		
+		data = new HashMap<String, Object>();
+		parse(str, config);
 		
 	};
 	
@@ -84,7 +112,20 @@ public class JSONObject {
 	 */
 	public void parse(String str) throws JSONParseException {
 		
-		new JSONParser(data, str);
+		parse(str, null);
+		
+	};
+	
+	/**
+	 * Parse a String to a JSONObject.
+	 * 
+	 * @param str String to be parsed.
+	 * @param config JSONConfig config for Parsing.
+	 * @throws JSONParseException When parsing fails.
+	 */
+	public void parse(String str, JSONConfig config) throws JSONParseException {
+		
+		new JSONParser(data, str, config);
 		
 	};
 	
@@ -95,34 +136,32 @@ public class JSONObject {
 	 */
 	public String stringify() {
 		
-		return _stringify(JSONUtils.suffix(), JSONUtils.beautifyTabs(), 0);
+		return _stringify(null, 0);
 		
 	};
 	
 	/**
 	 * Create a stringified JSON String.
 	 * 
-	 * @param suffix To use suffixes.
-	 * @param tabs To use tabs.
+	 * @param config JSONConfig config for Stringifying.
 	 * @return Returns a stringified JSON String.
 	 */
-	public String stringify(boolean suffix, boolean tabs) {
+	public String stringify(JSONConfig config) {
 		
-		return _stringify(suffix, tabs, 0);
+		return _stringify(config, 0);
 		
 	};
 	
 	/**
 	 * Create a stringified JSON String.
 	 * 
-	 * @param suffix To use suffixes.
-	 * @param tabs To use tabs.
+	 * @param config JSONConfig config for Stringifying.
 	 * @param myTabs The ammount of tabs, Should be 0.
 	 * @return Returns a stringified JSON String.
 	 */
-	public String _stringify(boolean suffix, boolean tabs, int myTabs) {
+	public String _stringify(JSONConfig config, int myTabs) {
 		
-		return JSONStringify.Stringify(data, suffix, tabs, myTabs);
+		return JSONStringify.Stringify(data, config, myTabs);
 		
 	};
 	
@@ -135,33 +174,21 @@ public class JSONObject {
 	@Override
 	public String toString() {
 		
-		return toString(JSONUtils.suffix());
-		
-	};
-	
-	/**
-	 * Create a stringified JSON String,<br>
-	 * ignores beautify rules.
-	 * 
-	 * @param suffix To use suffixes.
-	 * @return Returns a stringified JSON String.
-	 */
-	public String toString(boolean suffix) {
-		
-		return toString(suffix, false);
+		JSONConfig config = new JSONConfig();
+		config.tabs(false);
+		return toString(config);
 		
 	};
 	
 	/**
 	 * Create a stringified JSON String.
 	 * 
-	 * @param suffix To use suffixes.
-	 * @param tabs To use tabs.
+	 * @param config JSONConfig config for Stringifying.
 	 * @return Returns a stringified JSON String.
 	 */
-	public String toString(boolean suffix, boolean tabs) {
+	public String toString(JSONConfig config) {
 		
-		return stringify(suffix, tabs);
+		return stringify(config);
 		
 	};
 	
@@ -173,33 +200,21 @@ public class JSONObject {
 	 */
 	public byte[] toBytes() {
 		
-		return toBytes(JSONUtils.suffix(), false);
-		
-	};
-	
-	/**
-	 * Create a byte array from JSON,<br>
-	 * ignores beautify rules.
-	 * 
-	 * @param suffix To use suffixes.
-	 * @return Returns a stringified JSON byte array.
-	 */
-	public byte[] toBytes(boolean suffix) {
-		
-		return toBytes(suffix, false);
+		JSONConfig config = new JSONConfig();
+		config.tabs(false);
+		return toBytes(config);
 		
 	};
 	
 	/**
 	 * Create a byte array from JSON.
 	 * 
-	 * @param suffix To use suffixes.
-	 * @param tabs To use tabs.
+	 * @param config JSONConfig config for Stringifying.
 	 * @return Returns a stringified JSON byte array.
 	 */
-	public byte[] toBytes(boolean suffix, boolean tabs) {
+	public byte[] toBytes(JSONConfig config) {
 		
-		return stringify(suffix, tabs).getBytes();
+		return stringify(config).getBytes();
 		
 	};
 	
