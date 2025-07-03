@@ -211,7 +211,7 @@ public class JSONStringify {
 	 */
 	public static String Stringify(Object obj) {
 		
-		return Stringify(obj, new JSONConfig(), 0);
+		return Stringify(obj, null, 0);
 		
 	};
 	
@@ -224,6 +224,8 @@ public class JSONStringify {
 	 * @return The stringified Value
 	 */
 	public static String Stringify(Object obj, JSONConfig config, int myTabs) {
+		
+		if (config == null) config = new JSONConfig();
 		
 		//Null
 		if (obj == null) return "null";
@@ -276,8 +278,8 @@ public class JSONStringify {
 			Object ret = method.invoke(obj);
 			if (ret instanceof JSONObject) {
 				JSONObject json = (JSONObject) ret;
-				json.put("__class", cls.getName());
-				return ((JSONObject) ret).stringify();
+				if (config.className()) json.put("__class", cls.getName());
+				return ((JSONObject) ret).stringify(config);
 			};
 			
 		} catch (NoSuchMethodException ignore) {

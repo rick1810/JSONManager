@@ -8,6 +8,7 @@ public class JSONConfig {
 	private boolean threaded = JSONUtils.threaded();
 	private boolean suffix = JSONUtils.suffix();
 	private boolean tabs = JSONUtils.tabs();
+	private boolean className = JSONUtils.className();
 	
 	/**
 	 * Create a config with Default settings
@@ -116,6 +117,28 @@ public class JSONConfig {
 	public boolean tabs() {
 		
 		return this.tabs;
+		
+	};
+	
+	/**
+	 * Add className when a Class with toJSON is stringified
+	 * 
+	 * @param className {@code true}/{@code false}
+	 */
+	public void className(boolean className) {
+		
+		this.className = className;
+		
+	};
+	
+	/**
+	 * Get if className is added when a Class with toJSON is stringified
+	 * 
+	 * @return {@code true} When className is added, {@code false} When className will not be added.
+	 */
+	public boolean className() {
+		
+		return this.className;
 		
 	};
 	

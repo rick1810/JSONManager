@@ -293,7 +293,7 @@ public class JSONArray {
 	 * @param i Position of Object.
 	 */
 	public void remove(int i) {
-		if (i < 0 || i > data.size() || data.size() == 0) return;
+		if (i < 0 || i >= data.size()) return;
 		data.remove(i);
 	};
 	

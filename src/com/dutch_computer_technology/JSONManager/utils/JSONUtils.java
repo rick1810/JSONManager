@@ -13,6 +13,7 @@ public class JSONUtils {
 	private static boolean threaded = false;
 	private static boolean suffix = false;
 	private static boolean tabs = false;
+	private static boolean className = true;
 	
 	/**
 	 * Returns the current version of the JSONManager
@@ -21,7 +22,7 @@ public class JSONUtils {
 	 */
 	public static String version() {
 		
-		return "3.0.0";
+		return "3.0.1";
 		
 	};
 	
@@ -104,6 +105,28 @@ public class JSONUtils {
 		StringBuilder str = new StringBuilder();
 		for (int i = 0; i < tabs; i++) str.append("\t");
 		return str.toString();
+		
+	};
+	
+	/**
+	 * Add className when a Class with toJSON is stringified
+	 * 
+	 * @param className {@code true}/{@code false}
+	 */
+	public static void className(boolean className) {
+		
+		JSONUtils.className = className;
+		
+	};
+	
+	/**
+	 * Get if className is added when a Class with toJSON is stringified
+	 * 
+	 * @return {@code true} When className is added, {@code false} When className will not be added.
+	 */
+	public static boolean className() {
+		
+		return className;
 		
 	};
 	
