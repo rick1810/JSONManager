@@ -22,7 +22,7 @@ public class JSONUtils {
 	 */
 	public static String version() {
 		
-		return "3.0.1";
+		return "3.0.2";
 		
 	};
 	

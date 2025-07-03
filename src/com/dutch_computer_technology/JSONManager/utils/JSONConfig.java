@@ -55,6 +55,23 @@ public class JSONConfig {
 	};
 	
 	/**
+	 * Create a config and set it's settings
+	 * 
+	 * @param suffix {@code true}/{@code false}, Add suffix's behind Value's when stringified
+	 * @param tabs {@code true}/{@code false}, Add tabs when stringified
+	 * @param threaded {@code true}/{@code false}, Use Threads to Parse/Stringify JSON
+	 * @param className {@code true}/{@code false}, Add className to Stringified class using toJSON()
+	 */
+	public JSONConfig(boolean suffix, boolean tabs, boolean threaded, boolean className) {
+		
+		this.suffix = suffix;
+		this.tabs = tabs;
+		this.threaded = threaded;
+		this.className = className;
+		
+	};
+	
+	/**
 	 * Enable/Disable Threading for Parsing/Stringifying JSON
 	 * 
 	 * @param threaded {@code true}/{@code false}
