@@ -77,10 +77,24 @@ Disabled by default.
 > Using `stringify(config)` `toString(config)` `toBytes(config)`<br/>
 > For when you don't want to use the global settings
 
-- `JSONUtils.beautifyTabs()` : Returns true/false for global tabs
-- `JSONUtils.beautifyTabs(true/false)` : Set global tabs to true/false
-- `new JSONConfig().suffix()` : Returns true/false for tabs
-- `new JSONConfig().suffix(true/false)` : Set tabs to true/false
+- `JSONUtils.tabs()` : Returns true/false for global tabs
+- `JSONUtils.tabs(true/false)` : Set global tabs to true/false
+- `new JSONConfig().tabs()` : Returns true/false for tabs
+- `new JSONConfig().tabs(true/false)` : Set tabs to true/false
+
+### ClassName
+
+Add className when stringifying a class using toJSON(),<br/>
+Enabled by default.
+
+> [!NOTE]
+> Using `stringify(config)` `toString(config)` `toBytes(config)`<br/>
+> For when you don't want to use the global settings
+
+- `JSONUtils.className()` : Returns true/false for global className
+- `JSONUtils.className(true/false)` : Set global className to true/false
+- `new JSONConfig().className()` : Returns true/false for className
+- `new JSONConfig().className(true/false)` : Set className to true/false
 
 <br/>
 <br/>
@@ -89,10 +103,12 @@ Disabled by default.
 
 JSONManager can parse/stringify custom classes.
 > [!NOTE]
-> When a custom class does not have a `toJSON()`, `toString()` is used instead
+> When a custom class does not have a `toJSON()`, `toString()` is used instead.<br/>
+> className can be Disabled in the config, to prevent auto parsing
 
 > [!WARNING]
-> If a `toJSON()` is present, the `__class` key is set/overwritten to the className
+> If a `toJSON()` is present & className is enabled in the config,<br/>
+> the `__class` key is set/overwritten to the className
 
 ### Convert to JSON
 
